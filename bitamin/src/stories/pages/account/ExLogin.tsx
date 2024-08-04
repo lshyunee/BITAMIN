@@ -1,5 +1,5 @@
 // src/pages/Login.tsx
-import React, { useState } from 'react'
+import { useState } from 'react'
 import axiosInstance, { setAccessToken } from 'api/axiosInstance'
 import useAuthStore from 'store/useAuthStore'
 import { useCookies } from 'react-cookie'

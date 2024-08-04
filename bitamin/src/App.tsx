@@ -11,8 +11,8 @@ const App: React.FC = () => {
 
   return (
     <React.Fragment>
-      <HeaderBeforeLogin />
-      <HeaderAfterLogin />
+      {/* <HeaderBeforeLogin /> */}
+      {/* <HeaderAfterLogin /> */}
       <AppRouter />
       {/* {!excludeFooterPaths.includes(location.pathname) && <Footer />} */}
       <Footer />
