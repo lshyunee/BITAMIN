@@ -1,4 +1,3 @@
-import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import MainPage from 'stories/pages/main/MainPage'
 import LoginPage from 'stories/pages/account/LoginPage'
@@ -18,34 +17,33 @@ import AdiminPage from 'stories/pages/admin/AdiminPage'
 import LandingPage from 'stories/pages/main/LandingPage'
 import ExLogin from 'stories/pages/account/ExLogin'
 import MyPage from 'stories/pages/account/MyPage'
-import Hospital from 'stories/organisms/HospitalMap'
+import ComponentPage from 'stories/pages/ComponentPage'
 
 const AppRouter: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="" element={<LandingPage />} />
-        <Route path="/home" element={<MainPage />} />
-        <Route path="/loginex" element={<ExLogin />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/survey" element={<SurveyPage />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/counsultationlist" element={<ConsultationListPage />} />
-        <Route path="/counsultation" element={<ConsultationPage />} />
-        {/* <Route path="/counsult" element={<Counsult />} /> */}
-        <Route
-          path="/counsultationsharing"
-          element={<ConsultationSharingPage />}
-        />
-        <Route path="/healthuplist" element={<HealthUpListPage />} />
-        <Route path="/healthup" element={<HealthUpPage />} />
-        <Route path="/messagelist" element={<MessageListPage />} />
-        <Route path="/participantlist" element={<ParticipantListPage />} />
-        <Route path="/reply" element={<ReplyPage />} />
-        <Route path="/admin" element={<AdiminPage />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/component" element={<ComponentPage />} />
+      <Route path="" element={<LandingPage />} />
+      <Route path="/home" element={<MainPage />} />
+      <Route path="/loginex" element={<ExLogin />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/survey" element={<SurveyPage />} />
+      <Route path="/mypage" element={<MyPage />} />
+      <Route path="/counsultationlist" element={<ConsultationListPage />} />
+      <Route path="/counsultation" element={<ConsultationPage />} />
+      {/* <Route path="/counsult" element={<Counsult />} /> */}
+      <Route
+        path="/counsultationsharing"
+        element={<ConsultationSharingPage />}
+      />
+      <Route path="/healthuplist" element={<HealthUpListPage />} />
+      <Route path="/healthup" element={<HealthUpPage />} />
+      <Route path="/messagelist" element={<MessageListPage />} />
+      <Route path="/participantlist" element={<ParticipantListPage />} />
+      <Route path="/reply" element={<ReplyPage />} />
+      <Route path="/admin" element={<AdiminPage />} />
+    </Routes>
   )
 }
 

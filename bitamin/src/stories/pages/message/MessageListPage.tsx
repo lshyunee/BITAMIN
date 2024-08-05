@@ -1,7 +1,7 @@
-import { FunctionComponent, useCallback } from 'react'
+import { useCallback } from 'react'
 import styles from 'styles/message/MessageListPage.module.css'
 
-const MessageListPage: FunctionComponent = () => {
+const MessageListPage: React.FC = () => {
   const onFrameContainerClick = useCallback(() => {
     // Add your code here
   }, [])

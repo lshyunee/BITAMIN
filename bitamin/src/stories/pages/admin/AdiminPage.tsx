@@ -1,8 +1,8 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/admin/AdiminPage.module.css'
 
-const AdiminPage: FunctionComponent = () => {
+const AdiminPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
   const navigate = useNavigate()
 

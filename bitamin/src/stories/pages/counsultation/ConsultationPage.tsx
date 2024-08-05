@@ -1,7 +1,7 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import styles from 'styles/counsultation/CounsultationPage.module.css'
 
-const ConsultationPage: FunctionComponent = () => {
+const ConsultationPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
 
   const openFrame = useCallback(() => {

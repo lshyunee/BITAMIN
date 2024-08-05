@@ -1,7 +1,7 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import styles from 'styles/account/SignUpPage.module.css'
 
-const SignUpPage: FunctionComponent = () => {
+const SignUpPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
 
   const openFrame = useCallback(() => {

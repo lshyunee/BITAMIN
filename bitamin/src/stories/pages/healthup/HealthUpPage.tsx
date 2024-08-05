@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import * as tmPose from '@teachablemachine/pose'
 import * as tf from '@tensorflow/tfjs'
 import styles from 'styles/healthup/HealthUpPage.module.css'
 
-const HealthUP: FunctionComponent = () => {
+const HealthUP: React.FC = () => {
   const onGroupContainerClick = useCallback(() => {
     // Add your code here
   }, [])
