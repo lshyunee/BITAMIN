@@ -1,7 +1,7 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import styles from 'styles/message/ReplyPage.module.css'
 
-const ReplyPage: FunctionComponent = () => {
+const ReplyPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
   const [isFrame1Open, setFrame1Open] = useState(false)
 

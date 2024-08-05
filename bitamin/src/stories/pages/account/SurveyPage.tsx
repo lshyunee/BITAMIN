@@ -1,8 +1,8 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/SurveyPage.module.css'
 
-const SurveyPage: FunctionComponent = () => {
+const SurveyPage: React.FC = () => {
   const [isFrame1Open, setFrame1Open] = useState(false)
   const [isFrame2Open, setFrame2Open] = useState(false)
   const navigate = useNavigate()

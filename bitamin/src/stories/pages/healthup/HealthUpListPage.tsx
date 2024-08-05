@@ -1,7 +1,7 @@
-import { FunctionComponent, useCallback } from 'react'
+import { useCallback } from 'react'
 import styles from 'styles/healthup/HealthUpListPage.module.css'
 
-const UP: FunctionComponent = () => {
+const UP: React.FC = () => {
   const onRectangleClick = useCallback(() => {
     // Add your code here
   }, [])

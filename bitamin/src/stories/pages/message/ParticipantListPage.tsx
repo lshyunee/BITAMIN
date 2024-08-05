@@ -1,7 +1,7 @@
-import { FunctionComponent, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import styles from 'styles/message/ParticipantListPage.module.css'
 
-const ParticipantListPage: FunctionComponent = () => {
+const ParticipantListPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
 
   const openFrame = useCallback(() => {
