@@ -67,7 +67,7 @@ const HealthUP: FunctionComponent = () => {
       drawPose(pose)
     }
 
-    function drawPose(pose: tmPose.Pose) {
+    function drawPose(pose: any) {
       if (webcam.canvas) {
         ctx.drawImage(webcam.canvas, 0, 0)
         if (pose) {

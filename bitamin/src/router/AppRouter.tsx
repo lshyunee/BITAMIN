@@ -17,17 +17,20 @@ import ReplyPage from 'stories/pages/message/ReplyPage'
 import AdiminPage from 'stories/pages/admin/AdiminPage'
 import LandingPage from 'stories/pages/main/LandingPage'
 import ExLogin from 'stories/pages/account/ExLogin'
+import MyPage from 'stories/pages/account/MyPage'
+import Hospital from 'stories/organisms/HospitalMap'
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="" element={<LandingPage />} />
-        <Route path="/loginex" element={<ExLogin />} />
         <Route path="/home" element={<MainPage />} />
+        <Route path="/loginex" element={<ExLogin />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/survey" element={<SurveyPage />} />
+        <Route path="/mypage" element={<MyPage />} />
         <Route path="/counsultationlist" element={<ConsultationListPage />} />
         <Route path="/counsultation" element={<ConsultationPage />} />
         {/* <Route path="/counsult" element={<Counsult />} /> */}
