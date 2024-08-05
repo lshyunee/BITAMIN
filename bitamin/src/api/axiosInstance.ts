@@ -2,10 +2,10 @@
 import axios from 'axios'
 import useAuthStore from 'store/useAuthStore'
 
-let accessToken: string | null = null
+const accessToken: string | null = null
 
 const axiosInstance = axios.create({
-  baseURL: 'https://i11b105.p.ssafy.io/api',
+  baseURL: 'https://i11b105.p.ssafy.io/api', // API 기본 URL 설정
   headers: {
     'Content-Type': 'application/json',
   },
@@ -40,15 +40,16 @@ axiosInstance.interceptors.response.use(
       originalRequest.url &&
       !EXCLUDED_PATHS.some((path) => originalRequest.url.includes(path))
     ) {
-      if (error.response.status === 401 && !originalRequest._retry) {
+      if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
         try {
-          const response = await axiosInstance.post('/refresh-token')
+          const response = await axios.post('/refresh-token')
           const newAccessToken = response.data.accessToken
-          accessToken = newAccessToken
-          useAuthStore.getState().setAccessToken(newAccessToken)
+          setAccessToken(newAccessToken) // 토큰 업데이트
+          useAuthStore.getState().setAccessToken(newAccessToken) // 상태 업데이트
           axiosInstance.defaults.headers.common['Authorization'] =
             `Bearer ${newAccessToken}`
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
           return axiosInstance(originalRequest)
         } catch (refreshError) {
           return Promise.reject(refreshError)
@@ -60,7 +61,7 @@ axiosInstance.interceptors.response.use(
 )
 
 export const setAccessToken = (token: string) => {
-  accessToken = token
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
 export default axiosInstance

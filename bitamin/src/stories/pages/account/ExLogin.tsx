@@ -20,8 +20,8 @@ const ExLogin: React.FC = () => {
         }
       )
       const { accessToken, refreshToken } = response.data
-      setAccessToken(accessToken)
-      setAuthAccessToken(accessToken)
+      setAccessToken(accessToken) // axiosInstance에 accessToken 설정
+      setAuthAccessToken(accessToken) // 상태 관리에 accessToken 설정
       setCookie('refreshToken', refreshToken, {
         path: '/',
         secure: true,

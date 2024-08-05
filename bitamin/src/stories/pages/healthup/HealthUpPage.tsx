@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
-// import * as tmPose from '@teachablemachine/pose'
-// import * as tf from '@tensorflow/tfjs'
+import * as tmPose from '@teachablemachine/pose'
+import * as tf from '@tensorflow/tfjs'
 import styles from 'styles/healthup/HealthUpPage.module.css'
 
-const HealthUpPage: FunctionComponent = () => {
+const HealthUP: FunctionComponent = () => {
   const onGroupContainerClick = useCallback(() => {
     // Add your code here
   }, [])
@@ -11,75 +11,75 @@ const HealthUpPage: FunctionComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const labelContainerRef = useRef<HTMLDivElement>(null)
 
-  // useEffect(() => {
-  //   const URL = 'my_model/' // 상대 경로로 수정
-  //   let model: tmPose.CustomPoseNet
-  //   let webcam: tmPose.Webcam
-  //   let ctx: CanvasRenderingContext2D
-  //   let labelContainer: HTMLElement
-  //   let maxPredictions: number
+  useEffect(() => {
+    const URL = 'my_model/' // 상대 경로로 수정
+    let model: tmPose.CustomPoseNet
+    let webcam: tmPose.Webcam
+    let ctx: CanvasRenderingContext2D
+    let labelContainer: HTMLElement
+    let maxPredictions: number
 
-  // async function init() {
-  //   const modelURL = `${URL}model.json`
-  //   const metadataURL = `${URL}metadata.json`
+    async function init() {
+      const modelURL = `${URL}model.json`
+      const metadataURL = `${URL}metadata.json`
 
-  //   try {
-  //     model = await tmPose.load(modelURL, metadataURL)
-  //     maxPredictions = model.getTotalClasses()
+      try {
+        model = await tmPose.load(modelURL, metadataURL)
+        maxPredictions = model.getTotalClasses()
 
-  //     const size = 200
-  //     const flip = true
-  //     webcam = new tmPose.Webcam(size, size, flip)
-  //     await webcam.setup()
-  //     await webcam.play()
-  //     window.requestAnimationFrame(loop)
+        const size = 600
+        const flip = true
+        webcam = new tmPose.Webcam(size, size, flip)
+        await webcam.setup()
+        await webcam.play()
+        window.requestAnimationFrame(loop)
 
-  //     const canvas = canvasRef.current
-  //     if (canvas) {
-  //       canvas.width = size
-  //       canvas.height = size
-  //       ctx = canvas.getContext('2d')!
-  //     }
-  //     labelContainer = labelContainerRef.current!
-  //     for (let i = 0; i < maxPredictions; i++) {
-  //       labelContainer.appendChild(document.createElement('div'))
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to load model:', error)
-  //   }
-  // }
+        const canvas = canvasRef.current
+        if (canvas) {
+          canvas.width = size
+          canvas.height = size
+          ctx = canvas.getContext('2d')!
+        }
+        labelContainer = labelContainerRef.current!
+        for (let i = 0; i < maxPredictions; i++) {
+          labelContainer.appendChild(document.createElement('div'))
+        }
+      } catch (error) {
+        console.error('Failed to load model:', error)
+      }
+    }
 
-  // async function loop(timestamp: number) {
-  //   webcam.update()
-  //   await predict()
-  //   window.requestAnimationFrame(loop)
-  // }
+    async function loop(timestamp: number) {
+      webcam.update()
+      await predict()
+      window.requestAnimationFrame(loop)
+    }
 
-  // async function predict() {
-  //   const { pose, posenetOutput } = await model.estimatePose(webcam.canvas)
-  //   const prediction = await model.predict(posenetOutput)
+    async function predict() {
+      const { pose, posenetOutput } = await model.estimatePose(webcam.canvas)
+      const prediction = await model.predict(posenetOutput)
 
-  //   for (let i = 0; i < maxPredictions; i++) {
-  //     const classPrediction = `${prediction[i].className}: ${prediction[i].probability.toFixed(2)}`
-  //     labelContainer.childNodes[i].textContent = classPrediction
-  //   }
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction = `${prediction[i].className}: ${prediction[i].probability.toFixed(2)}`
+        labelContainer.childNodes[i].textContent = classPrediction
+      }
 
-  //   drawPose(pose)
-  // }
+      drawPose(pose)
+    }
 
-  // function drawPose(pose: tmPose.Pose) {
-  //   if (webcam.canvas) {
-  //     ctx.drawImage(webcam.canvas, 0, 0)
-  //     if (pose) {
-  //       const minPartConfidence = 0.5
-  //       tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx)
-  //       tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx)
-  //     }
-  //   }
-  // }
+    function drawPose(pose: tmPose.Pose) {
+      if (webcam.canvas) {
+        ctx.drawImage(webcam.canvas, 0, 0)
+        if (pose) {
+          const minPartConfidence = 0.5
+          tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx)
+          tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx)
+        }
+      }
+    }
 
-  //   init()
-  // }, [])
+    init()
+  }, [])
 
   return (
     <div className={styles.up}>
@@ -184,4 +184,4 @@ const HealthUpPage: FunctionComponent = () => {
   )
 }
 
-export default HealthUpPage
+export default HealthUP
