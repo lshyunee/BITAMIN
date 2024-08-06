@@ -4,7 +4,6 @@ import useAuthStore from 'store/useAuthStore' // 경로 수정
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/SignUpPage.module.css' // 스타일 경로
-import PhotoUpload from '@/stories/organisms/PhotoUpload'
 
 const SignUpPage: React.FC = () => {
   const [signupForm, setSignupForm] = useState({
@@ -17,7 +16,7 @@ const SignUpPage: React.FC = () => {
     sidoName: '',
     gugunName: '',
     dongName: '',
-    // profileImage: '',
+    profileImage: null, // 파일은 null로 초기화
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -32,11 +31,18 @@ const SignUpPage: React.FC = () => {
   } = useAuthStore()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setSignupForm({
-      ...signupForm,
-      [name]: value,
-    })
+    const { name, value, files } = e.target
+    if (name === 'profileImage' && files) {
+      setSignupForm({
+        ...signupForm,
+        profileImage: files[0],
+      })
+    } else {
+      setSignupForm({
+        ...signupForm,
+        [name]: value,
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,23 +56,28 @@ const SignUpPage: React.FC = () => {
       return
     }
 
-    const signupData = {
-      email: signupForm.email,
-      name: signupForm.name,
-      nickname: signupForm.nickname,
-      password: signupForm.password,
-      birthday: signupForm.birthday,
-      sidoName: signupForm.sidoName,
-      gugunName: signupForm.gugunName,
-      dongName: signupForm.dongName,
-      // profileImage: signupForm.profileImage,
+    const formData = new FormData()
+    formData.append('email', signupForm.email)
+    formData.append('name', signupForm.name)
+    formData.append('nickname', signupForm.nickname)
+    formData.append('password', signupForm.password)
+    formData.append('birthday', signupForm.birthday)
+    formData.append('sidoName', signupForm.sidoName)
+    formData.append('gugunName', signupForm.gugunName)
+    formData.append('dongName', signupForm.dongName)
+    if (signupForm.profileImage) {
+      formData.append('profileImage', signupForm.profileImage)
+    }
+    // FormData의 모든 값을 출력하여 확인합니다.
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`)
     }
 
     try {
-      console.log('Sign-up request data:', signupData) // 요청 데이터 확인
+      console.log('Sign-up request data:', Array.from(formData.entries())) // 요청 데이터 확인
       const response = await axiosInstance.post(
         'https://i11b105.p.ssafy.io/api/members/register',
-        signupData
+        formData
       )
       console.log('Server response:', response.data) // 서버 응답 확인
 
@@ -132,7 +143,13 @@ const SignUpPage: React.FC = () => {
                                 alt=""
                                 src="Intersect.svg"
                               />
-                              {/* <PhotoUpload /> */}
+                              <input
+                                type="file"
+                                name="profileImage"
+                                accept="image/*"
+                                onChange={handleChange}
+                                className={styles.inputFile}
+                              />
                             </div>
                           </div>
                           <div className={styles.iconWrapper}>
