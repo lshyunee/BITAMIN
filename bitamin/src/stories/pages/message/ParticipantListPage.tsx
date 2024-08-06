@@ -1,7 +1,7 @@
 import MessageListPage from 'stories/organisms/MessageListPage'
 import { useState, useCallback } from 'react'
 import styles from 'styles/message/ParticipantListPage.module.css'
-import ParticipantsList from 'stories/organisms/ParticipantsList'
+import ParticipantsListWithMessageCreate from 'stories/organisms/ParticipantsListWithMessageCreate'
 
 const ParticipantListPage: React.FC = () => {
   const [isFrameOpen, setFrameOpen] = useState(false)
@@ -20,7 +20,7 @@ const ParticipantListPage: React.FC = () => {
 
   return (
     <>
-      <ParticipantsList />
+      <ParticipantsListWithMessageCreate />
       <br />
       <div className={styles.div}>
         <div className={styles.child} />
