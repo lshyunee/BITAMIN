@@ -73,10 +73,13 @@ const AuthPage: React.FC = () => {
         <button onClick={() => setAuthAccessToken('newAccessToken')}>
           Set Access Token
         </button>
+        <br />
         <button onClick={() => setAuthRefreshToken('newRefreshToken')}>
           Set Refresh Token
         </button>
+        <br />
         <button onClick={clearAuth}>Clear Tokens</button>
+        <br />
         <button onClick={handleFetchMessages}>Fetch Messages</button>
         <p>Current Access Token: {accessToken}</p>
         <p>Current Refresh Token: {refreshToken}</p>
