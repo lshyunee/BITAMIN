@@ -9,6 +9,7 @@ import recordSave from 'assets/image/recordSave.png'
 import recordStop from 'assets/image/recordEnd.png'
 import recordAgain from 'assets/image/recordAgain.png'
 import recordPlay from 'assets/image/recordPlay.png'
+import ModalExample from 'stories/organisms/ModalExample'
 
 const MainPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false)
@@ -125,134 +126,141 @@ const MainPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.div}>
-      <div className={styles.navbar}>
-        <div className={styles.bitamin}>BItAMin</div>
-        <div className={styles.parent}>
-          <div className={styles.div4} onClick={onRectangleClick}>
-            <div className={styles.wrapper}>
-              <div className={styles.b}>상담</div>
-            </div>
-            <div className={styles.child12} />
-          </div>
-          <div className={styles.div4} onClick={onRectangleClick}>
-            <div className={styles.wrapper}>
-              <div className={styles.b}>미션</div>
-            </div>
-            <div className={styles.child12} />
-          </div>
-          <div className={styles.div4} onClick={onRectangleClick}>
-            <div className={styles.group}>
-              <div className={styles.b}>건강</div>
-              <div className={styles.upWrapper}>
-                <div className={styles.up}>UP !</div>
+    <>
+      <ModalExample />
+      <div className={styles.div}>
+        <div className={styles.navbar}>
+          <div className={styles.bitamin}>BItAMin</div>
+          <div className={styles.parent}>
+            <div className={styles.div4} onClick={onRectangleClick}>
+              <div className={styles.wrapper}>
+                <div className={styles.b}>상담</div>
               </div>
+              <div className={styles.child12} />
             </div>
-            <div className={styles.child12} />
-          </div>
-          <div className={styles.div4} onClick={onRectangleClick}>
-            <div className={styles.wrapper}>
-              <div className={styles.b}>관리자</div>
+            <div className={styles.div4} onClick={onRectangleClick}>
+              <div className={styles.wrapper}>
+                <div className={styles.b}>미션</div>
+              </div>
+              <div className={styles.child12} />
             </div>
-            <div className={styles.child12} />
+            <div className={styles.div4} onClick={onRectangleClick}>
+              <div className={styles.group}>
+                <div className={styles.b}>건강</div>
+                <div className={styles.upWrapper}>
+                  <div className={styles.up}>UP !</div>
+                </div>
+              </div>
+              <div className={styles.child12} />
+            </div>
+            <div className={styles.div4} onClick={onRectangleClick}>
+              <div className={styles.wrapper}>
+                <div className={styles.b}>관리자</div>
+              </div>
+              <div className={styles.child12} />
+            </div>
           </div>
-        </div>
-        <div className={styles.div12}>
-          <div className={styles.frameParent}>
-            <div className={styles.personcircleParent}>
-              <img
-                className={styles.personcircleIcon}
-                alt=""
-                src="PersonCircle.svg"
-              />
-              <div className={styles.frameGroup}>
-                <div className={styles.frameDiv}>
-                  <div className={styles.div13}>
-                    <span className={styles.txt}>
-                      <span>김싸피</span>
-                      <span className={styles.span}>
-                        <span>{` `}</span>
-                        <span className={styles.span1}>님</span>
+          <div className={styles.div12}>
+            <div className={styles.frameParent}>
+              <div className={styles.personcircleParent}>
+                <img
+                  className={styles.personcircleIcon}
+                  alt=""
+                  src="PersonCircle.svg"
+                />
+                <div className={styles.frameGroup}>
+                  <div className={styles.frameDiv}>
+                    <div className={styles.div13}>
+                      <span className={styles.txt}>
+                        <span>김싸피</span>
+                        <span className={styles.span}>
+                          <span>{` `}</span>
+                          <span className={styles.span1}>님</span>
+                        </span>
                       </span>
-                    </span>
+                    </div>
+                  </div>
+                  <div className={styles.vectorWrapper}>
+                    <img
+                      className={styles.vectorIcon}
+                      alt=""
+                      src="Vector.svg"
+                    />
                   </div>
                 </div>
-                <div className={styles.vectorWrapper}>
-                  <img className={styles.vectorIcon} alt="" src="Vector.svg" />
-                </div>
               </div>
-            </div>
-            <div className={styles.wrapper1} onClick={onRectangleClick}>
-              <img className={styles.icon} alt="" src="쪽지 버튼.svg" />
+              <div className={styles.wrapper1} onClick={onRectangleClick}>
+                <img className={styles.icon} alt="" src="쪽지 버튼.svg" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className={styles.inner}>
-        <div className={styles.div3}>
-          <p className={styles.p}>오늘 하루도 최선을 다한 당신,</p>
-          <p className={styles.p}>멋져요!</p>
+        <div className={styles.inner}>
+          <div className={styles.div3}>
+            <p className={styles.p}>오늘 하루도 최선을 다한 당신,</p>
+            <p className={styles.p}>멋져요!</p>
+          </div>
         </div>
-      </div>
-      <div className={styles.recordBtns}>
+        <div className={styles.recordBtns}>
+          <img
+            className={styles.recordBtn}
+            alt=""
+            src={isRecording ? recordStop : isEnded ? recordPlay : recordStart}
+            onClick={isEnded ? onPlayClick : onRecordClick}
+          />
+          {isEnded && (
+            <>
+              <img
+                className={styles.recordBtn}
+                alt=""
+                src={recordAgain}
+                onClick={onAgainClick}
+              />
+              <img
+                className={styles.recordBtn}
+                alt=""
+                src={recordSave}
+                onClick={onSaveAudio}
+              />
+            </>
+          )}
+        </div>
         <img
-          className={styles.recordBtn}
+          className={styles.recordBackgroundImg}
           alt=""
-          src={isRecording ? recordStop : isEnded ? recordPlay : recordStart}
-          onClick={isEnded ? onPlayClick : onRecordClick}
+          src={recordBackGroundImg}
         />
-        {isEnded && (
-          <>
-            <img
-              className={styles.recordBtn}
-              alt=""
-              src={recordAgain}
-              onClick={onAgainClick}
-            />
-            <img
-              className={styles.recordBtn}
-              alt=""
-              src={recordSave}
-              onClick={onSaveAudio}
-            />
-          </>
-        )}
+        <div className={styles.consultBox} onClick={onRectangleClick} />
+        <div className={styles.questBox} onClick={onRectangleClick} />
+        <div
+          className={styles.tryConsultBtn}
+          onMouseEnter={handleMouseEnterConsult}
+          onMouseLeave={handleMouseLeaveConsult}
+        >
+          <b className={styles.b}>상담하기</b>
+        </div>
+        <div
+          className={styles.tryQuestBtn}
+          onMouseEnter={handleMouseEnterQuest}
+          onMouseLeave={handleMouseLeaveQuest}
+        >
+          <b className={styles.b}>미션하기</b>
+        </div>
+        <img className={styles.mainImg} alt="" src={mainImg} />
+        <div className={styles.consultBorder} />
+        <img
+          className={`${styles.mainConsultImg} ${consultOpacityClass}`}
+          src={mainConsultImg}
+          alt="Main Consult"
+        />
+        <div className={styles.questBorder} />
+        <img
+          className={`${styles.mainQuestImg} ${questOpacityClass}`}
+          alt="Main Quest"
+          src={mainQuestImg}
+        />
       </div>
-      <img
-        className={styles.recordBackgroundImg}
-        alt=""
-        src={recordBackGroundImg}
-      />
-      <div className={styles.consultBox} onClick={onRectangleClick} />
-      <div className={styles.questBox} onClick={onRectangleClick} />
-      <div
-        className={styles.tryConsultBtn}
-        onMouseEnter={handleMouseEnterConsult}
-        onMouseLeave={handleMouseLeaveConsult}
-      >
-        <b className={styles.b}>상담하기</b>
-      </div>
-      <div
-        className={styles.tryQuestBtn}
-        onMouseEnter={handleMouseEnterQuest}
-        onMouseLeave={handleMouseLeaveQuest}
-      >
-        <b className={styles.b}>미션하기</b>
-      </div>
-      <img className={styles.mainImg} alt="" src={mainImg} />
-      <div className={styles.consultBorder} />
-      <img
-        className={`${styles.mainConsultImg} ${consultOpacityClass}`}
-        src={mainConsultImg}
-        alt="Main Consult"
-      />
-      <div className={styles.questBorder} />
-      <img
-        className={`${styles.mainQuestImg} ${questOpacityClass}`}
-        alt="Main Quest"
-        src={mainQuestImg}
-      />
-    </div>
+    </>
   )
 }
 
