@@ -11,6 +11,7 @@ import ConsultationSharingPage from 'stories/pages/counsultation/ConsultationSha
 import HealthUpListPage from 'stories/pages/healthup/HealthUpListPage'
 import HealthUpPage from 'stories/pages/healthup/HealthUpPage'
 import MessageListMainPage from 'stories/pages/message/MessageListMainPage'
+import MessageDetailPage from 'stories/organisms/MessageDetailPage'
 import ParticipantListPage from 'stories/pages/message/ParticipantListPage'
 import ReplyPage from 'stories/pages/message/ReplyPage'
 import AdiminPage from 'stories/pages/admin/AdiminPage'
@@ -42,6 +43,8 @@ const AppRouter: React.FC = () => {
       <Route path="/healthuplist" element={<HealthUpListPage />} />
       <Route path="/healthup" element={<HealthUpPage />} />
       <Route path="/messagelist" element={<MessageListMainPage />} />
+      <Route path="/messages" element={<MessageListMainPage />} />
+      <Route path="/messages/:messageId" element={<MessageDetailPage />} />
       <Route path="/participantlist" element={<ParticipantListPage />} />
       <Route path="/reply" element={<ReplyPage />} />
       <Route path="/admin" element={<AdiminPage />} />
