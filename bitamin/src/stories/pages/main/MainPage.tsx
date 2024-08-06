@@ -9,7 +9,6 @@ import recordSave from 'assets/image/recordSave.png'
 import recordStop from 'assets/image/recordEnd.png'
 import recordAgain from 'assets/image/recordAgain.png'
 import recordPlay from 'assets/image/recordPlay.png'
-import { div } from '@tensorflow/tfjs'
 import ModalExample from 'stories/organisms/ModalExample'
 
 const MainPage: React.FC = () => {
