@@ -1,15 +1,31 @@
+.div {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-color: #ff713c;
+  overflow: hidden;
+  text-align: left;
+  font-size: 1.25rem;
+  color: #000;
+  font-family: NanumBarunpen;
+}
+
 .betterTomorrowBetter {
   position: absolute;
-  top: 26.063rem;
+  top: calc(50% + 63px); /* 기존 값 유지 */
   left: calc(50% - 110px);
-}
-.bitamim {
-  position: absolute;
-  top: calc(50% - 63px);
-  left: calc(50% - 375px);
-  font-size: 4.375rem;
+  font-size: 2rem; /* 필요시 폰트 크기 조정 */
   color: #fff;
 }
+
+.bitamim {
+  position: absolute;
+  top: calc(50% - 63px); /* 기존 값 유지 */
+  left: calc(50% - 375px);
+  font-size: 4.375rem; /* 기존 값 유지 */
+  color: #fff;
+}
+
 .child {
   position: absolute;
   top: -2.961rem;
@@ -22,6 +38,7 @@
   transform: rotate(-41.2deg);
   transform-origin: 0 0;
 }
+
 .item {
   position: absolute;
   top: 27.305rem;
@@ -33,14 +50,26 @@
   transform: rotate(-31.4deg);
   transform-origin: 0 0;
 }
-.div {
-  width: 100%;
-  position: relative;
-  background-color: #ff713c;
-  height: 48rem;
-  overflow: hidden;
-  text-align: left;
-  font-size: 1.25rem;
-  color: #000;
-  font-family: NanumBarunpen;
+
+@media (max-width: 768px) {
+  .betterTomorrowBetter {
+    top: 40%; /* 반응형 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem; /* 반응형 폰트 크기 조정 */
+  }
+
+  .bitamim {
+    top: 30%; /* 반응형 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem; /* 반응형 폰트 크기 조정 */
+  }
+
+  .child,
+  .item {
+    width: 15rem; /* 반응형 크기 조정 */
+    height: 50rem; /* 반응형 크기 조정 */
+    top: -10%; /* 반응형 위치 조정 */
+  }
 }
