@@ -28,11 +28,12 @@ const questions = [
 ]
 
 const SurveyPage: React.FC = () => {
-  const [scores, setScores] = useState<number[]>(Array(20).fill(0))
-  // const { username: userId } = useAuthStore()
+  const [scores, setScores] = useState<number[]>(Array(20).fill(-1))
   const navigate = useNavigate()
 
   const handleScoreChange = (index: number, score: number) => {
+    console.log(`Question ${index + 1} selected score: ${score}`)
+
     setScores((prevScores) => {
       const newScores = [...prevScores]
       newScores[index] = score
@@ -41,12 +42,16 @@ const SurveyPage: React.FC = () => {
   }
 
   const handleSubmit = useCallback(async () => {
+    if (scores.includes(-1)) {
+      alert('모든 질문에 답변해 주세요.')
+      return
+    }
+
     const totalScore = scores.reduce((acc, score) => acc + score, 0)
+
     const data = {
-      // id: 'ai id',
       checkupScore: totalScore,
       // checkupDate: new Date().toISOString().split('T')[0],
-      // memberId: userId, // useAuthStore에서 가져온 userId 사용
     }
 
     console.log('합산 점수:', totalScore)
@@ -105,25 +110,25 @@ const SurveyPage: React.FC = () => {
                       </div>
                       <div className={styles.group}>
                         <button
-                          className={styles.div5}
+                          className={`${styles.div5} ${scores[index] === 0 ? styles.selected : ''}`}
                           onClick={() => handleScoreChange(index, 0)}
                         >
                           극히 드물게 (0점)
                         </button>
                         <button
-                          className={styles.div7}
+                          className={`${styles.div7} ${scores[index] === 1 ? styles.selected : ''}`}
                           onClick={() => handleScoreChange(index, 1)}
                         >
                           가끔 (1점)
                         </button>
                         <button
-                          className={styles.div9}
+                          className={`${styles.div9} ${scores[index] === 2 ? styles.selected : ''}`}
                           onClick={() => handleScoreChange(index, 2)}
                         >
                           자주 (2점)
                         </button>
                         <button
-                          className={styles.div5}
+                          className={`${styles.div5} ${scores[index] === 3 ? styles.selected : ''}`}
                           onClick={() => handleScoreChange(index, 3)}
                         >
                           대부분 (3점)

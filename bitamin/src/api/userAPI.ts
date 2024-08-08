@@ -1,5 +1,6 @@
 import axiosInstance from './axiosInstance'
 
+// 사용자 정보를 가져오는 함수
 export const fetchUserInfo = async () => {
   try {
     const response = await axiosInstance.get('members/get-member')
@@ -9,6 +10,7 @@ export const fetchUserInfo = async () => {
   }
 }
 
+// 사용자 정보를 업데이트하는 함수
 export const updateUserInfo = async (userInfo: any) => {
   try {
     const memberUpdateRequestDTO = {
@@ -34,7 +36,7 @@ export const updateUserInfo = async (userInfo: any) => {
     }
 
     const response = await axiosInstance.put(
-      '/members/update-member',
+      'members/update-member',
       formData,
       {
         headers: {
@@ -44,7 +46,7 @@ export const updateUserInfo = async (userInfo: any) => {
     )
 
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error response:', error.response)
     throw new Error('Failed to update user info')
   }

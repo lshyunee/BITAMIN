@@ -14,6 +14,7 @@ import MessageListMainPage from 'stories/pages/message/MessageListMainPage'
 import ParticipantListPage from 'stories/pages/message/ParticipantListPage'
 import ReplyPage from 'stories/pages/message/ReplyPage'
 import AdiminPage from 'stories/pages/admin/AdiminPage'
+import AdiminDetail from '@/stories/pages/admin/AdminDetail'
 import LandingPage from 'stories/pages/main/LandingPage'
 import ExLogin from 'stories/pages/account/ExLogin'
 import MyPage from 'stories/pages/account/MyPage'
@@ -44,7 +45,17 @@ const AppRouter: React.FC = () => {
         <Route path="/messagelist" element={<MessageListMainPage />} />
         <Route path="/participantlist" element={<ParticipantListPage />} />
         <Route path="/reply" element={<ReplyPage />} />
-        <Route path="/admin" element={<AdiminPage />} />
+
+        {/* 관리자페이지 */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute authentication={true} requiredRole="ROLE_ADMIN">
+              <AdiminPage />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/admin/:id" element={<AdiminDetail />} />
       </Route>
 
       {/* 인증 하지 않아야만 가능한 페이지 */}
