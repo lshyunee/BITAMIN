@@ -14,26 +14,28 @@ interface Marker {
   }
   content: string
 }
+interface MapBoxProps {
+  lat: number
+  lng: number
+}
 
-const MapBox: React.FC = () => {
+const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
   const [info, setInfo] = useState<Marker | null>(null)
   const [markers, setMarkers] = useState<Marker[]>([])
   const [places, setPlaces] = useState<any[]>([])
   const mapRef = useRef<any>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
 
-  // 대전 유성구 봉명동 좌표
-  const defaultCenter = { lat: 36.362343, lng: 127.356749 }
+  // 유저 좌표
+  const defaultCenter = { lat, lng }
   const defaultLevel = 5 // 기본 확대/축소 레벨
 
   useEffect(() => {
+    console.log('Current Location:', lat, lng)
     if (!mapContainerRef.current || mapRef.current) return
 
     const options = {
-      center: new window.kakao.maps.LatLng(
-        defaultCenter.lat,
-        defaultCenter.lng
-      ),
+      center: new window.kakao.maps.LatLng(lat, lng),
       level: defaultLevel,
     }
 
@@ -61,6 +63,7 @@ const MapBox: React.FC = () => {
       radius: 10000, // 반경 10km 내 검색
     }
 
+    // 키워드 검색
     ps.keywordSearch(
       '정신건강',
       (data: any, status: any, _pagination: any) => {

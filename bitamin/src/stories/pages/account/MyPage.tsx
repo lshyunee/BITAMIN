@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, ChangeEvent } from 'react'
-import PhotoUpload from 'stories/organisms/PhotoUpload'
 import styles from 'styles/account/MyPage.module.css'
 import HospitalMap from 'stories/organisms/HospitalMap'
 import Button from 'stories/atoms/Button'
@@ -14,12 +13,13 @@ const MyPage: React.FC = () => {
     sidoName: '',
     gugunName: '',
     dongName: '',
-    profileImage: null as File | null, // 파일은 null로 초기화
+    image: null as File | null, // 파일은 null로 초기화
   })
 
+  // 타입 불일치로 초기값 number 타입으로 설정
   const [location, setLocation] = useState({
-    lat: '',
-    lng: '',
+    lat: 0, // 기본값 설정
+    lng: 0, // 기본값 설정
   })
 
   const [isPhotoUploadOpen, setIsPhotoUploadOpen] = useState(false)
@@ -39,12 +39,13 @@ const MyPage: React.FC = () => {
           sidoName: data.sidoName,
           gugunName: data.gugunName,
           dongName: data.dongName,
-          profileImage: null,
+          image: null,
         })
         setLocation({
-          lat: data.lat,
-          lng: data.lng,
+          lat: parseFloat(data.lat),
+          lng: parseFloat(data.lng),
         })
+        // console.log(data.lat)
       } catch (error) {
         console.error(error)
       }
@@ -83,10 +84,10 @@ const MyPage: React.FC = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
-    if (name === 'profileImage' && files) {
+    if (name === 'image' && files) {
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
-        profileImage: files[0],
+        image: files[0],
       }))
     } else {
       setUserInfo((prevUserInfo) => ({
@@ -106,7 +107,6 @@ const MyPage: React.FC = () => {
       alert('정보 수정에 실패했습니다.')
     }
   }
-
   return (
     <>
       <Button
@@ -164,10 +164,11 @@ const MyPage: React.FC = () => {
               />
               <input
                 type="file"
-                name="profileImage"
-                accept="image/*"
+                name="image"
+                accept=".jpg,.jpeg,.png"
                 onChange={handleInputChange}
               />
+
               <Button
                 label={'저장'}
                 type={'DEFAULT'}
@@ -183,11 +184,11 @@ const MyPage: React.FC = () => {
               <div>{userInfo.sidoName}</div>
               <div>{userInfo.gugunName}</div>
               <div>{userInfo.dongName}</div>
-              {userInfo.profileImage && (
+              {userInfo.image && (
                 <img
-                  src={URL.createObjectURL(userInfo.profileImage)}
+                  src={URL.createObjectURL(userInfo.image)}
                   alt="Profile"
-                  className={styles.profileImage}
+                  className={styles.image}
                 />
               )}
             </div>
@@ -201,9 +202,7 @@ const MyPage: React.FC = () => {
           src="image-add.svg"
           onClick={openPhotoUpload}
         />
-        <div className={styles.div5} onClick={openPhotoUpload}>
-          <PhotoUpload />
-        </div>
+        <div className={styles.div5} onClick={openPhotoUpload}></div>
         <div className={styles.wrapper} onClick={openFrame}>
           <Button
             label={'정보 수정'}
@@ -408,7 +407,8 @@ const MyPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.div66}>
-          <b>대전광역시 유성구</b>
+          <b>{userInfo.sidoName} </b>
+          <b>{userInfo.gugunName}</b>
           <span className={styles.span4}>
             <span>에 있는</span>
             <span className={styles.span5}>{` `}</span>

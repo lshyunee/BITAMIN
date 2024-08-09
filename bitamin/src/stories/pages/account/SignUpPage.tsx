@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import axiosInstance from 'api/axiosInstance' // 경로 수정
-import useAuthStore from 'store/useAuthStore' // 경로 수정
+// import axiosInstance from '@/api/axiosInstance' // 경로 수정
+import { registerUser } from '@/api/userAPI'
+import useAuthStore from '@/store/useAuthStore' // 경로 수정
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/SignUpPage.module.css' // 스타일 경로
@@ -16,7 +17,7 @@ const SignUpPage: React.FC = () => {
     sidoName: '',
     gugunName: '',
     dongName: '',
-    profileImage: null as File | null, // 파일은 null로 초기화
+    image: null as File | null, // 파일은 null로 초기화
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -31,10 +32,10 @@ const SignUpPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
-    if (name === 'profileImage' && files) {
+    if (name === 'image' && files) {
       setSignupForm({
         ...signupForm,
-        profileImage: files[0],
+        image: files[0],
       })
     } else {
       setSignupForm({
@@ -55,39 +56,10 @@ const SignUpPage: React.FC = () => {
       return
     }
 
-    const formData = new FormData()
-    formData.append('email', signupForm.email)
-    formData.append('name', signupForm.name)
-    formData.append('nickname', signupForm.nickname)
-    formData.append('password', signupForm.password)
-    if (signupForm.profileImage) {
-      formData.append('profileImage', signupForm.profileImage)
-    }
-    if (signupForm.birthday) {
-      formData.append('birthday', signupForm.birthday)
-    }
-    if (signupForm.sidoName) {
-      formData.append('sidoName', signupForm.sidoName)
-    }
-    if (signupForm.gugunName) {
-      formData.append('gugunName', signupForm.gugunName)
-    }
-    if (signupForm.dongName) {
-      formData.append('dongName', signupForm.dongName)
-    }
-
     try {
-      const response = await axiosInstance.post(
-        '/api/members/register',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
+      const data = await registerUser(signupForm)
 
-      const { accessToken, refreshToken } = response.data
+      const { accessToken, refreshToken } = data
 
       setAuthAccessToken(accessToken) // zustand 상태 관리에 accessToken 설정
       setAuthRefreshToken(refreshToken) // zustand 상태 관리에 refreshToken 설정
@@ -150,8 +122,8 @@ const SignUpPage: React.FC = () => {
                               />
                               <input
                                 type="file"
-                                name="profileImage"
-                                accept="image/*"
+                                name="image"
+                                accept=".jpg, .jpeg, .png"
                                 onChange={handleChange}
                                 className={styles.inputFile}
                               />
