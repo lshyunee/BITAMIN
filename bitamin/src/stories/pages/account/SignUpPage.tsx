@@ -24,6 +24,7 @@ const SignUpPage: React.FC = () => {
   const [showAddress, setShowAddress] = useState(false)
   const [, setCookie] = useCookies(['refreshToken'])
   const navigate = useNavigate()
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null) // 미리보기 URL 상태
 
   const {
     setAccessToken: setAuthAccessToken,
@@ -32,11 +33,14 @@ const SignUpPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
-    if (name === 'image' && files) {
+    if (name === 'image' && files && files[0]) {
+      const imageFile = files[0]
       setSignupForm({
         ...signupForm,
-        image: files[0],
+        image: imageFile,
       })
+      const previewUrl = URL.createObjectURL(imageFile)
+      setPreviewUrl(previewUrl) // 미리보기 URL을 상태에 저장
     } else {
       setSignupForm({
         ...signupForm,
@@ -120,6 +124,17 @@ const SignUpPage: React.FC = () => {
                                 alt=""
                                 src="Intersect.svg"
                               />
+                              <div>
+                                {previewUrl ? (
+                                  <img
+                                    src={previewUrl}
+                                    alt="미리보기 이미지"
+                                    className={styles.image}
+                                  />
+                                ) : (
+                                  <div>이미지를 불러오는 중...</div>
+                                )}
+                              </div>
                               <input
                                 type="file"
                                 name="image"

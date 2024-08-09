@@ -13,8 +13,11 @@ const MyPage: React.FC = () => {
     sidoName: '',
     gugunName: '',
     dongName: '',
-    image: null as File | null, // 파일은 null로 초기화
+    image: null as File | null, // 새로 업로드할 파일
+    profileUrl: '', // 서버에서 받아온 이미지 URL
   })
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null) // 미리보기 URL 상태
 
   // 타입 불일치로 초기값 number 타입으로 설정
   const [location, setLocation] = useState({
@@ -39,15 +42,18 @@ const MyPage: React.FC = () => {
           sidoName: data.sidoName,
           gugunName: data.gugunName,
           dongName: data.dongName,
-          image: null,
+          image: null, // 새로 업로드할 파일은 초기화
+          profileUrl: data.profileUrl, // 서버에서 받은 이미지 URL
         })
+        // 서버에서 받은 프로필 이미지 URL을 미리보기 URL로 설정
+        setPreviewUrl(data.profileUrl)
+
         setLocation({
           lat: parseFloat(data.lat),
           lng: parseFloat(data.lng),
         })
-        // console.log(data.lat)
       } catch (error) {
-        console.error(error)
+        console.error('Error fetching user info:', error)
       }
     }
 
@@ -82,13 +88,18 @@ const MyPage: React.FC = () => {
     // Add your code here
   }, [])
 
+  // 수정 시 사용
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
-    if (name === 'image' && files) {
+    if (name === 'image' && files && files[0]) {
+      const imageFile = files[0]
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
-        image: files[0],
+        image: imageFile,
       }))
+      // 새로 업로드한 이미지의 미리보기 URL 생성
+      const previewUrl = URL.createObjectURL(imageFile)
+      setPreviewUrl(previewUrl) // 미리보기 URL을 상태에 저장
     } else {
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
@@ -97,24 +108,78 @@ const MyPage: React.FC = () => {
     }
   }
 
+  // 사용자 정보 저장 시
   const handleUpdateUserInfo = async () => {
     console.log(userInfo)
     try {
       await updateUserInfo(userInfo)
       alert('정보가 성공적으로 수정되었습니다.')
+      setIsEditing(false)
+      // 서버에 저장된 최신 프로필 사진 불러오기
+      const data = await fetchUserInfo()
+      setPreviewUrl(data.imageUrl)
+      setUserInfo((prevUserInfo) => ({
+        ...prevUserInfo,
+        profileUrl: data.profileUrl,
+        image: null, // 업로드된 파일 초기화
+      }))
     } catch (error) {
-      console.error(error)
+      console.error('Error updating user info:', error)
       alert('정보 수정에 실패했습니다.')
     }
   }
+
   return (
     <>
       <Button
         label={isEditing ? '취소' : '정보 수정'}
         type={'DEFAULT'}
-        onClick={() => setIsEditing(!isEditing)}
+        onClick={() => {
+          if (isEditing) {
+            setIsEditing(false)
+            // 수정 취소 시 서버에서 최신 정보를 다시 불러옴
+            const getUserInfo = async () => {
+              try {
+                const data = await fetchUserInfo()
+                console.log('Fetched user data on cancel:', data) // 디버깅용 로그
+                setPreviewUrl(data.profileUrl)
+                setUserInfo((prevUserInfo) => ({
+                  ...prevUserInfo,
+                  email: data.email,
+                  name: data.name,
+                  nickname: data.nickname,
+                  birthday: data.birthday,
+                  sidoName: data.sidoName,
+                  gugunName: data.gugunName,
+                  dongName: data.dongName,
+                  profileUrl: data.profileUrl,
+                  image: null,
+                }))
+              } catch (error) {
+                console.error('Error fetching user info on cancel:', error)
+              }
+            }
+
+            getUserInfo()
+          } else {
+            setIsEditing(true)
+          }
+        }}
       />
       <div className={styles.div}>
+        {/* 화면 상단에 이미지 표시 */}
+        <div>
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="미리보기 이미지"
+              className={styles.image}
+            />
+          ) : (
+            <div>이미지를 불러오는 중...</div>
+          )}
+        </div>
+        {/* 나머지 컴포넌트 */}
         <div className={styles.child} />
         <div className={styles.item} />
         <div className={styles.frameParent}>
@@ -184,13 +249,13 @@ const MyPage: React.FC = () => {
               <div>{userInfo.sidoName}</div>
               <div>{userInfo.gugunName}</div>
               <div>{userInfo.dongName}</div>
-              {userInfo.image && (
+              {/* {userInfo.image && (
                 <img
                   src={URL.createObjectURL(userInfo.image)}
                   alt="Profile"
                   className={styles.image}
                 />
-              )}
+              )} */}
             </div>
           )}
         </div>
@@ -204,13 +269,13 @@ const MyPage: React.FC = () => {
         />
         <div className={styles.div5} onClick={openPhotoUpload}></div>
         <div className={styles.wrapper} onClick={openFrame}>
-          <Button
+          {/* <Button
             label={'정보 수정'}
             type={'DEFAULT'}
             onClick={() => {
               console.log('정보수정 버튼 클릭')
             }}
-          />
+          /> */}
         </div>
         <div className={styles.container} onClick={openFrame1}>
           <div className={styles.div6}>비밀번호 변경</div>
@@ -308,6 +373,7 @@ const MyPage: React.FC = () => {
         </div>
         <div className={styles.rectangleParent}>
           <div className={styles.groupChild} />
+
           <div className={styles.div48}>나의 차트</div>
         </div>
         <div className={styles.groupParent}>
