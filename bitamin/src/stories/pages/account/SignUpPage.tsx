@@ -1,6 +1,11 @@
-import React, { useState } from 'react'
-// import axiosInstance from '@/api/axiosInstance' // 경로 수정
-import { registerUser } from '@/api/userAPI'
+import React, { useState, useEffect } from 'react'
+import {
+  registerUser,
+  checkNickname,
+  fetchSidoNames,
+  fetchGugunNames,
+  fetchDongNames,
+} from '@/api/userAPI'
 import useAuthStore from '@/store/useAuthStore' // 경로 수정
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
@@ -19,19 +24,39 @@ const SignUpPage: React.FC = () => {
     dongName: '',
     image: null as File | null, // 파일은 null로 초기화
   })
+  const [nicknameValid, setNicknameValid] = useState<boolean | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showAddress, setShowAddress] = useState(false)
   const [, setCookie] = useCookies(['refreshToken'])
   const navigate = useNavigate()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null) // 미리보기 URL 상태
+
+  const [sidoNames, setSidoNames] = useState<string[]>([])
+  const [gugunNames, setGugunNames] = useState<string[]>([])
+  const [dongNames, setDongNames] = useState<string[]>([])
 
   const {
     setAccessToken: setAuthAccessToken,
     setRefreshToken: setAuthRefreshToken,
   } = useAuthStore()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 시/도 목록을 가져옴
+  useEffect(() => {
+    const loadSidoNames = async () => {
+      try {
+        const data = await fetchSidoNames()
+        setSidoNames(data)
+      } catch (error) {
+        console.error('시/도 목록을 가져오는 중 오류 발생:', error)
+      }
+    }
+
+    loadSidoNames()
+  }, [])
+
+  const handleChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, files } = e.target
     if (name === 'image' && files && files[0]) {
       const imageFile = files[0]
@@ -46,6 +71,44 @@ const SignUpPage: React.FC = () => {
         ...signupForm,
         [name]: value,
       })
+
+      if (name === 'nickname' && value) {
+        try {
+          const result = await checkNickname(value)
+          setNicknameValid(result === 0) // 0이면 사용 가능, 1이면 중복
+        } catch (error) {
+          setNicknameValid(null)
+          setError('닉네임 중복 확인 중 오류가 발생했습니다.')
+        }
+      }
+
+      if (name === 'sidoName') {
+        // 시/도를 선택하면 구/군 목록을 로드
+        try {
+          const data = await fetchGugunNames(value)
+          setGugunNames(data)
+          setSignupForm({
+            ...signupForm,
+            sidoName: value,
+            gugunName: '',
+            dongName: '',
+          })
+          setDongNames([]) // 구/군 선택 전 동 목록 초기화
+        } catch (error) {
+          console.error('구/군 목록을 가져오는 중 오류 발생:', error)
+        }
+      }
+
+      if (name === 'gugunName') {
+        // 구/군을 선택하면 동 목록을 로드
+        try {
+          const data = await fetchDongNames(signupForm.sidoName, value)
+          setDongNames(data)
+          setSignupForm({ ...signupForm, gugunName: value, dongName: '' })
+        } catch (error) {
+          console.error('동 목록을 가져오는 중 오류 발생:', error)
+        }
+      }
     }
   }
 
@@ -57,6 +120,10 @@ const SignUpPage: React.FC = () => {
     // 비밀번호 확인
     if (signupForm.password !== signupForm.passwordConfirm) {
       setError('비밀번호가 일치하지 않습니다.')
+      return
+    }
+    if (nicknameValid === false) {
+      setError('중복된 닉네임입니다. 다른 닉네임을 사용하세요.')
       return
     }
 
@@ -82,10 +149,6 @@ const SignUpPage: React.FC = () => {
       console.error('Signup error:', error) // 오류 로그 출력
       console.log('Error response:', error.response) // 상세 오류 응답 출력
     }
-  }
-
-  const toggleAddress = () => {
-    setShowAddress(!showAddress)
   }
 
   return (
@@ -219,11 +282,16 @@ const SignUpPage: React.FC = () => {
                                         placeholder="닉네임"
                                         required
                                       />
-                                      <img
-                                        className={styles.checkBrokenIcon1}
-                                        alt=""
-                                        src="check-broken.svg"
-                                      />
+                                      {nicknameValid === false && (
+                                        <div className={styles.error}>
+                                          닉네임이 이미 사용 중입니다.
+                                        </div>
+                                      )}
+                                      {nicknameValid && (
+                                        <div className={styles.success}>
+                                          닉네임을 사용할 수 있습니다.
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -308,103 +376,71 @@ const SignUpPage: React.FC = () => {
                                   <div className={styles.rectangleContainer}>
                                     <div className={styles.instanceInner} />
                                   </div>
-                                  <div className={styles.parent4}>
-                                    <button
-                                      type="button"
-                                      onClick={toggleAddress}
-                                      className={styles.inputToggle}
+                                  <div>
+                                    <select
+                                      name="sidoName"
+                                      value={signupForm.sidoName}
+                                      onChange={handleChange}
+                                      className={styles.input}
+                                      required
                                     >
-                                      {showAddress
-                                        ? '주소 숨기기'
-                                        : '주소 입력'}
-                                    </button>
+                                      <option value="">시/도 선택</option>
+                                      {sidoNames.map((sido) => (
+                                        <option key={sido} value={sido}>
+                                          {sido}
+                                        </option>
+                                      ))}
+                                    </select>
                                   </div>
                                 </div>
                               </div>
-                              {showAddress && (
-                                <>
-                                  <div className={styles.component70}>
-                                    <div className={styles.instanceGroup}>
-                                      <div
-                                        className={styles.rectangleContainer}
+                              {signupForm.sidoName && (
+                                <div className={styles.component74}>
+                                  <div className={styles.instanceGroup}>
+                                    <div className={styles.rectangleContainer}>
+                                      <div className={styles.instanceInner} />
+                                    </div>
+                                    <div>
+                                      <select
+                                        name="gugunName"
+                                        value={signupForm.gugunName}
+                                        onChange={handleChange}
+                                        className={styles.input}
                                       >
-                                        <div className={styles.instanceItem} />
-                                      </div>
-                                      <div className={styles.component69}>
-                                        <div className={styles.group}>
-                                          <input
-                                            type="text"
-                                            name="sidoName"
-                                            value={signupForm.sidoName}
-                                            onChange={handleChange}
-                                            className={styles.input}
-                                            placeholder="시/도"
-                                            required
-                                          />
-                                          <img
-                                            className={styles.checkBrokenIcon1}
-                                            alt=""
-                                            src="check-broken.svg"
-                                          />
-                                        </div>
-                                      </div>
+                                        <option value="">구/군 선택</option>
+                                        {gugunNames.map((gugun) => (
+                                          <option key={gugun} value={gugun}>
+                                            {gugun}
+                                          </option>
+                                        ))}
+                                      </select>
                                     </div>
                                   </div>
-                                  <div className={styles.component70}>
-                                    <div className={styles.instanceGroup}>
-                                      <div
-                                        className={styles.rectangleContainer}
+                                </div>
+                              )}
+                              {signupForm.gugunName && (
+                                <div className={styles.component74}>
+                                  <div className={styles.instanceGroup}>
+                                    <div className={styles.rectangleContainer}>
+                                      <div className={styles.instanceInner} />
+                                    </div>
+                                    <div>
+                                      <select
+                                        name="dongName"
+                                        value={signupForm.dongName}
+                                        onChange={handleChange}
+                                        className={styles.input}
                                       >
-                                        <div className={styles.instanceItem} />
-                                      </div>
-                                      <div className={styles.component69}>
-                                        <div className={styles.group}>
-                                          <input
-                                            type="text"
-                                            name="gugunName"
-                                            value={signupForm.gugunName}
-                                            onChange={handleChange}
-                                            className={styles.input}
-                                            placeholder="군/구"
-                                            required
-                                          />
-                                          <img
-                                            className={styles.checkBrokenIcon1}
-                                            alt=""
-                                            src="check-broken.svg"
-                                          />
-                                        </div>
-                                      </div>
+                                        <option value="">동 선택</option>
+                                        {dongNames.map((dong) => (
+                                          <option key={dong} value={dong}>
+                                            {dong}
+                                          </option>
+                                        ))}
+                                      </select>
                                     </div>
                                   </div>
-                                  <div className={styles.component70}>
-                                    <div className={styles.instanceGroup}>
-                                      <div
-                                        className={styles.rectangleContainer}
-                                      >
-                                        <div className={styles.instanceItem} />
-                                      </div>
-                                      <div className={styles.component69}>
-                                        <div className={styles.group}>
-                                          <input
-                                            type="text"
-                                            name="dongName"
-                                            value={signupForm.dongName}
-                                            onChange={handleChange}
-                                            className={styles.input}
-                                            placeholder="동"
-                                            required
-                                          />
-                                          <img
-                                            className={styles.checkBrokenIcon1}
-                                            alt=""
-                                            src="check-broken.svg"
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
+                                </div>
                               )}
                               {error && (
                                 <div className={styles.error}>{error}</div>

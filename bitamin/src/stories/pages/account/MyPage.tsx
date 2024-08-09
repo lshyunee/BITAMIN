@@ -3,8 +3,11 @@ import styles from 'styles/account/MyPage.module.css'
 import HospitalMap from 'stories/organisms/HospitalMap'
 import Button from 'stories/atoms/Button'
 import { fetchUserInfo, updateUserInfo } from '@/api/userAPI'
+import { fetchHealthReports } from '@/api/userAPI'
+import { useNavigate } from 'react-router-dom'
 
 const MyPage: React.FC = () => {
+  const navigate = useNavigate()
   const [userInfo, setUserInfo] = useState({
     email: '',
     name: '',
@@ -15,6 +18,8 @@ const MyPage: React.FC = () => {
     dongName: '',
     image: null as File | null, // 새로 업로드할 파일
     profileUrl: '', // 서버에서 받아온 이미지 URL
+    checkupScore: 0,
+    checkupDate: '', // 건강 보고서 날짜
   })
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null) // 미리보기 URL 상태
@@ -30,11 +35,28 @@ const MyPage: React.FC = () => {
   const [isFrame1Open, setFrame1Open] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
+  const [healthReports, setHealthReports] = useState<any[]>([])
+
+  // 점수에 따른 메시지 반환 함수
+  const getScoreMessage = (score: number): string => {
+    if (score <= 15) {
+      return `현재 당신의 점수는 정상 범위에 속합니다. 유의미한 수준의 우울감이 나타나지 않으며, 전반적으로 안정된 상태를 유지하고 있습니다. 이러한 상태를 지속적으로 유지하기 위해 현재의 생활 습관을 잘 관리하시길 권장드립니다. 만약 기분 변화가 느껴지거나 불안함이 생긴다면, 가벼운 산책이나 취미 생활을 통해 긍정적인 기운을 유지하는 것도 도움이 될 수 있습니다.`
+    } else if (score <= 20) {
+      return `다소 경미한 수준의 우울감이 느껴질 수 있습니다. 이러한 기분은 일상생활에 큰 지장을 주지는 않지만, 지속된다면 심리적, 신체적 자원에 영향을 미칠 가능성이 있습니다. 지금은 충분한 휴식과 자기 돌봄이 중요한 시기입니다. 스스로의 감정에 귀 기울이고, 필요하다면 가까운 친구나 가족과 대화를 나누며 마음을 나누어 보세요. 또한, 이러한 기분이 지속될 경우 가까운 지역센터나 전문기관을 찾아 전문가의 도움을 받는 것도 좋은 방법입니다.`
+    } else if (score <= 24) {
+      return `현재 당신의 점수는 중간 정도의 우울감을 나타내고 있습니다. 이 정도의 우울감은 종종 일상생활에 어려움을 초래할 수 있으며, 신체적, 심리적 에너지를 저하시킬 가능성이 큽니다. 이러한 상황에서는 혼자 감정을 다루기보다는 전문가의 도움을 받는 것이 좋습니다. 가까운 지역센터나 전문기관에서 상담을 받아보는 것을 적극 권장드립니다. 전문가와 함께라면 당신의 기분 상태를 더 잘 이해하고, 필요한 지원을 받을 수 있을 것입니다.`
+    } else {
+      return `현재 점수는 심각한 수준의 우울감을 나타내며, 즉각적인 전문적인 지원이 필요할 수 있습니다. 이 정도의 우울감은 일상생활의 기능을 크게 저하시킬 수 있으며, 신체적, 심리적 건강에 심각한 영향을 미칠 수 있습니다. 가능한 빨리 전문기관을 찾아가 치료적 개입과 평가를 받아보시기를 강력히 권장드립니다. 전문가의 도움을 통해, 당신의 현재 상태를 개선할 수 있는 구체적인 방법을 찾을 수 있을 것입니다. 혼자가 아닌, 함께 극복해 나가는 것이 중요합니다.`
+    }
+  }
+
   useEffect(() => {
     const getUserInfo = async () => {
       try {
         const data = await fetchUserInfo()
-        setUserInfo({
+        // console.log('Fetched user data:', data) // 데이터를 확인하는 로그
+        setUserInfo((prevUserInfo) => ({
+          ...prevUserInfo,
           email: data.email,
           name: data.name,
           nickname: data.nickname,
@@ -42,9 +64,8 @@ const MyPage: React.FC = () => {
           sidoName: data.sidoName,
           gugunName: data.gugunName,
           dongName: data.dongName,
-          image: null, // 새로 업로드할 파일은 초기화
-          profileUrl: data.profileUrl, // 서버에서 받은 이미지 URL
-        })
+          profileUrl: data.profileUrl,
+        }))
         // 서버에서 받은 프로필 이미지 URL을 미리보기 URL로 설정
         setPreviewUrl(data.profileUrl)
 
@@ -57,7 +78,25 @@ const MyPage: React.FC = () => {
       }
     }
 
+    const getHealthReports = async () => {
+      try {
+        const healthReports = await fetchHealthReports()
+        if (healthReports.length > 0) {
+          // 가장 최근의 보고서 선택 (마지막 항목)
+          const latestReport = healthReports[healthReports.length - 1]
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            checkupScore: latestReport.checkupScore,
+            checkupDate: latestReport.checkupDate,
+          }))
+        }
+      } catch (error) {
+        console.error('Error fetching health reports:', error)
+      }
+    }
+
     getUserInfo()
+    getHealthReports()
   }, [])
 
   const openPhotoUpload = useCallback(() => {
@@ -110,7 +149,6 @@ const MyPage: React.FC = () => {
 
   // 사용자 정보 저장 시
   const handleUpdateUserInfo = async () => {
-    console.log(userInfo)
     try {
       await updateUserInfo(userInfo)
       alert('정보가 성공적으로 수정되었습니다.')
@@ -128,6 +166,8 @@ const MyPage: React.FC = () => {
       alert('정보 수정에 실패했습니다.')
     }
   }
+  // 점수에 따른 설명을 가져옴
+  const scoreDescription = getScoreMessage(userInfo.checkupScore)
 
   return (
     <>
@@ -141,7 +181,6 @@ const MyPage: React.FC = () => {
             const getUserInfo = async () => {
               try {
                 const data = await fetchUserInfo()
-                console.log('Fetched user data on cancel:', data) // 디버깅용 로그
                 setPreviewUrl(data.profileUrl)
                 setUserInfo((prevUserInfo) => ({
                   ...prevUserInfo,
@@ -277,7 +316,10 @@ const MyPage: React.FC = () => {
             }}
           /> */}
         </div>
-        <div className={styles.container} onClick={openFrame1}>
+        <div
+          className={styles.container}
+          onClick={() => navigate('/change-password')}
+        >
           <div className={styles.div6}>비밀번호 변경</div>
         </div>
         <div className={styles.rectangleDiv} />
@@ -285,15 +327,16 @@ const MyPage: React.FC = () => {
         <div className={styles.div9}>내 주변 병원 찾기</div>
         <div className={styles.div10}>검사 결과</div>
         <div className={styles.div11}>
-          <span className={styles.span}>{`15 `}</span>
+          <span className={styles.span}>{userInfo.checkupScore}</span>
           <span className={styles.span1}>점</span>
         </div>
-        <div className={styles.div12}>
+        {/* <div className={styles.div12}>
           중한 우울 중한 수준의 우울감이 시사됩니다. 이러한 높은 수준의 우울감은
           흔히 신체적, 심리적 대처자원을 저하시키며 개인의 일상생활을 어렵게
           만들기도 합니다. 가까운 지역센터나 전문기관을 방문하여 보다 상세한
           평가와 도움을 받아보시기 바랍니다.
-        </div>
+        </div> */}
+        <div className={styles.div12}>{scoreDescription}</div>
         <div className={styles.child1} />
         <script
           type="text/javascript"

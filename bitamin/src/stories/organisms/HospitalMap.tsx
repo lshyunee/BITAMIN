@@ -31,7 +31,6 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
   const defaultLevel = 5 // 기본 확대/축소 레벨
 
   useEffect(() => {
-    console.log('Current Location:', lat, lng)
     if (!mapContainerRef.current || mapRef.current) return
 
     const options = {
@@ -68,7 +67,7 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
       '정신건강',
       (data: any, status: any, _pagination: any) => {
         if (status === window.kakao.maps.services.Status.OK) {
-          console.log('Search Data:', data) // 검색 데이터를 로그로 출력합니다.
+          // console.log('Search Data:', data) // 검색 데이터를 로그로 출력합니다.
           const bounds = new window.kakao.maps.LatLngBounds()
           const newMarkers: Marker[] = []
           const newPlaces: any[] = []

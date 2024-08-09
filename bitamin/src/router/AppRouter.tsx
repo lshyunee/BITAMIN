@@ -21,6 +21,7 @@ import MyPage from 'stories/pages/account/MyPage'
 import ComponentPage from 'stories/pages/ComponentPage'
 import AuthPage from '@/stories/pages/account/AuthPage'
 import PrivateRoute from './PrivateRouter'
+import PasswordChangePage from '@/stories/pages/account/PasswordChangePage'
 
 const AppRouter: React.FC = () => {
   return (
@@ -34,6 +35,7 @@ const AppRouter: React.FC = () => {
         <Route path="/home" element={<MainPage />} />
         <Route path="/survey" element={<SurveyPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/change-password" element={<PasswordChangePage />} />
         <Route path="/counsultationlist" element={<ConsultationListPage />} />
         <Route path="/counsultation" element={<ConsultationPage />} />
         <Route
