@@ -1,5 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import MainPage from 'stories/pages/main/MainPage'
+import MissionPage from 'stories/pages/mission/MissionPage'
+import Weather from 'stories/pages/mission/Weather'
 import LoginPage from 'stories/pages/account/LoginPage'
 import SignUpPage from 'stories/pages/account/SignUpPage'
 import SurveyPage from 'stories/pages/account/SurveyPage'
@@ -22,6 +25,18 @@ import ComponentPage from 'stories/pages/ComponentPage'
 import AuthPage from '@/stories/pages/account/AuthPage'
 import PrivateRoute from './PrivateRouter'
 import PasswordChangePage from '@/stories/pages/account/PasswordChangePage'
+import MissionForm from '@/stories/pages/mission/MissionForm.tsx'
+import CompleteMission from '@/stories/pages/mission/CompleteMission.tsx'
+import CalendarCompleteMission from '@/stories/pages/mission/CalendarCompleteMission.tsx'
+import MyPlant from '@/stories/pages/mission/MyPlant.tsx'
+
+const getCurrentDate = (): string => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 const AppRouter: React.FC = () => {
   return (
@@ -47,6 +62,12 @@ const AppRouter: React.FC = () => {
         <Route path="/messagelist" element={<MessageListMainPage />} />
         <Route path="/participantlist" element={<ParticipantListPage />} />
         <Route path="/reply" element={<ReplyPage />} />
+        <Route path="/mission" element={<MissionPage />} />
+        <Route path="/missionform" element={<MissionForm />} />
+        <Route path="/complete" element={<CompleteMission />} />
+        <Route path="/completecal" element={<CalendarCompleteMission />} />
+        <Route path="/weather" element={<Weather />} />
+        <Route path="/plant" element={<MyPlant />} />
 
         {/* 관리자페이지 */}
         <Route
