@@ -44,10 +44,10 @@ const AppRouter: React.FC = () => {
       {/* 인증 여부 없이도 접속 가능한 페이지 */}
       <Route path="" element={<LandingPage />} />
       <Route path="/component" element={<ComponentPage />} />
+      <Route path="/home" element={<MainPage />} />
 
       {/* 인증 반드시 필요한 페이지 */}
       <Route element={<PrivateRoute authentication={true} />}>
-        <Route path="/home" element={<MainPage />} />
         <Route path="/survey" element={<SurveyPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/change-password" element={<PasswordChangePage />} />

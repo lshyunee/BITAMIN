@@ -5,22 +5,22 @@ import MissionForm from './MissionForm'
 import { getMemberPhraseByDate } from '@/api/phraseAPI'
 
 interface Mission {
-  id: number;
-  missionName: string;
-  missionDescription: string;
-  missionLevel: number;
-  completeDate: string;
-  imageUrl: string;
-  missionReview: string;
+  id: number
+  missionName: string
+  missionDescription: string
+  missionLevel: number
+  completeDate: string
+  imageUrl: string
+  missionReview: string
 }
 
 interface CompleteMissionProps {
-  selectedDate: string;
+  selectedDate: string
 }
 
 interface Record {
-  id: number;
-  phraseUrl: string;
+  id: number
+  phraseUrl: string
 }
 
 const CompleteMission: React.FC<CompleteMissionProps> = ({ selectedDate }) => {
@@ -105,12 +105,13 @@ const CompleteMission: React.FC<CompleteMissionProps> = ({ selectedDate }) => {
             )}
           </div>
         </>
+      ) : selectedDate === todayDate ? (
+        <MissionForm
+          selectedDate={selectedDate}
+          onSubmitSuccess={handleSubmitSuccess}
+        /> // 오늘 날짜에 미션이 없으면 MissionForm을 표시합니다.
       ) : (
-        selectedDate === todayDate ? (
-          <MissionForm selectedDate={selectedDate} onSubmitSuccess={handleSubmitSuccess} /> // 오늘 날짜에 미션이 없으면 MissionForm을 표시합니다.
-        ) : (
-          <p>해당 날짜에 완료된 미션이 없습니다.</p>
-        )
+        <p>해당 날짜에 완료된 미션이 없습니다.</p>
       )}
     </div>
   )

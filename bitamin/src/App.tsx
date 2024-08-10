@@ -7,6 +7,7 @@ import Footer from 'stories/organisms/common/Footer'
 
 const AppContent: React.FC = () => {
   const location = useLocation()
+  const excludeHeaderPaths = ['/']
   const excludeFooterPaths = ['/'] // Footer를 제외할 경로들
 
   const isLoggedIn = false // 로그인 상태를 확인하는 로직이 필요
@@ -16,6 +17,12 @@ const AppContent: React.FC = () => {
       {/* <HeaderBeforeLogin /> */}
       {/* <HeaderAfterLogin /> */}
       {/* {isLoggedIn ? <HeaderAfterLogin /> : <HeaderBeforeLogin />} */}
+      {!excludeHeaderPaths.includes(location.pathname) &&
+        (isLoggedIn ? (
+          <HeaderAfterLogin username="{username}" />
+        ) : (
+          <HeaderBeforeLogin />
+        ))}
       <AppRouter />
       {!excludeFooterPaths.includes(location.pathname) && <Footer />}
     </>

@@ -176,7 +176,7 @@ const MainPage: React.FC = () => {
       <HeaderAfterLogin username="{username}" />
       <ModalExample />
       <div className={styles.div}>
-        <div className={styles.navbar}>
+        {/* <div className={styles.navbar}>
           <div className={styles.bitamin}>BItAMin</div>
           <div className={styles.parent}>
             <div className={styles.div4} onClick={onRectangleClick}>
@@ -241,7 +241,7 @@ const MainPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className={styles.inner}>
           <div className={styles.div3}>
             <p className={styles.p}>{phraseContent}</p>

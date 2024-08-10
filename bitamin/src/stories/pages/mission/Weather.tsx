@@ -22,6 +22,7 @@ const WeatherInfo: React.FC = () => {
     const year = today.getFullYear()
     let month = today.getMonth() + 1
     let day = today.getDate()
+
     // @ts-ignore
     month = month < 10 ? `0${month}` : month
     // @ts-ignore
@@ -148,7 +149,6 @@ const WeatherInfo: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      (
       <>
         <div style={styles.info}>기온 : {tmp}℃</div>
         <div style={styles.info}>하늘상태 : {sky}</div>
@@ -158,7 +158,6 @@ const WeatherInfo: React.FC = () => {
           <img src={getImage()} alt="weather icon" style={styles.image} />
         )}
       </>
-      )
     </div>
   )
 }
