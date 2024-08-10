@@ -288,13 +288,6 @@ const MyPage: React.FC = () => {
               <div>{userInfo.sidoName}</div>
               <div>{userInfo.gugunName}</div>
               <div>{userInfo.dongName}</div>
-              {/* {userInfo.image && (
-                <img
-                  src={URL.createObjectURL(userInfo.image)}
-                  alt="Profile"
-                  className={styles.image}
-                />
-              )} */}
             </div>
           )}
         </div>
@@ -307,15 +300,7 @@ const MyPage: React.FC = () => {
           onClick={openPhotoUpload}
         />
         <div className={styles.div5} onClick={openPhotoUpload}></div>
-        <div className={styles.wrapper} onClick={openFrame}>
-          {/* <Button
-            label={'정보 수정'}
-            type={'DEFAULT'}
-            onClick={() => {
-              console.log('정보수정 버튼 클릭')
-            }}
-          /> */}
-        </div>
+        <div className={styles.wrapper} onClick={openFrame}></div>
         <div
           className={styles.container}
           onClick={() => navigate('/change-password')}
@@ -330,12 +315,6 @@ const MyPage: React.FC = () => {
           <span className={styles.span}>{userInfo.checkupScore}</span>
           <span className={styles.span1}>점</span>
         </div>
-        {/* <div className={styles.div12}>
-          중한 우울 중한 수준의 우울감이 시사됩니다. 이러한 높은 수준의 우울감은
-          흔히 신체적, 심리적 대처자원을 저하시키며 개인의 일상생활을 어렵게
-          만들기도 합니다. 가까운 지역센터나 전문기관을 방문하여 보다 상세한
-          평가와 도움을 받아보시기 바랍니다.
-        </div> */}
         <div className={styles.div12}>{scoreDescription}</div>
         <div className={styles.child1} />
         <script
