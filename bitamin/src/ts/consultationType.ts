@@ -55,3 +55,12 @@ export interface ConsultationList {
   totalElements: number
   totalPages: number
 }
+
+export interface RoomData {
+  category: string
+  title: string
+  isPrivated: number
+  password?: string | null
+  startTime: string
+  endTime: string
+}
