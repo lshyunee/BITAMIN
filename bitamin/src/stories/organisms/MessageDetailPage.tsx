@@ -93,20 +93,20 @@ const MessageDetailPage: React.FC = () => {
     }
 
     try {
+      // 새로운 답글 생성
       const newReply = await createReply(Number(messageId), {
         content: replyContent,
       })
-      setMessage((prevMessage) => {
-        if (prevMessage) {
-          return {
-            ...prevMessage,
-            replies: [...prevMessage.replies, newReply],
-          }
-        }
-        return prevMessage
-      })
-      setReplyContent('') // Clear the input field after reply is added
+
+      // 답글이 성공적으로 추가되었음을 알림
       alert('Reply added successfully')
+
+      // 메시지를 다시 로딩하여 최신 데이터를 가져옴
+      const updatedMessage = await fetchMessageDetail(Number(messageId))
+      setMessage(updatedMessage)
+
+      // 입력 필드 초기화
+      setReplyContent('')
     } catch (err) {
       alert('Failed to add reply')
       console.error('Error adding reply:', err)

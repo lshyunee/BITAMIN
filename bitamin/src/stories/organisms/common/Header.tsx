@@ -1,39 +1,44 @@
-import React, { FunctionComponent, useCallback, useState } from 'react'
+import { FunctionComponent, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '@/store/useAuthStore'
 import { useCookies } from 'react-cookie'
 
-interface HeaderProps {
-  isLoggedIn: boolean
-  username?: string
-  isAdmin?: boolean
-}
-
-const Header: FunctionComponent<HeaderProps> = ({
-  isLoggedIn,
-  username = '',
-  isAdmin = false,
-}) => {
+const Header: FunctionComponent<{ username?: string }> = ({ username }) => {
   const navigate = useNavigate()
-  const { accessToken, refreshToken, clearAuth } = useAuthStore()
+  const { accessToken, refreshToken, clearAuth, userRole } = useAuthStore()
   const [, , removeCookie] = useCookies(['refreshToken'])
   const [dropdownVisible, setDropdownVisible] = useState(false)
 
-  // 공통 클릭 핸들러
   const onBItAMinTextClick = useCallback(() => {
-    navigate(isLoggedIn ? '/home' : '/')
-  }, [navigate, isLoggedIn])
+    navigate('/home')
+  }, [navigate])
+
+  const onConsultationClick = useCallback(() => {
+    navigate('/consultationlist')
+  }, [navigate])
 
   const onLoginTextClick = useCallback(() => {
     navigate('/login')
   }, [navigate])
 
-  const onSignupTextClick = useCallback(() => {
-    navigate('/signup')
+  const onMissionClick = useCallback(() => {
+    navigate('/mission')
   }, [navigate])
 
-  const onCounselClick = useCallback(() => {
-    navigate('/counselationlist')
+  const onHealthUPClick = useCallback(() => {
+    navigate('/healthuplist')
+  }, [navigate])
+
+  const onAdminClick = useCallback(() => {
+    navigate('/admin')
+  }, [navigate])
+
+  const onMessageClick = useCallback(() => {
+    navigate('/messagelist')
+  }, [navigate])
+
+  const onSignupTextClick = useCallback(() => {
+    navigate('/signup')
   }, [navigate])
 
   const onLogoutClick = useCallback(() => {
@@ -48,7 +53,7 @@ const Header: FunctionComponent<HeaderProps> = ({
   }, [])
 
   return (
-    <div className="w-full relative flex flex-col items-start justify-start py-[0rem] px-[2.5rem] box-border text-center text-[0.875rem] text-brand-primary font-nanumgothic">
+    <div className="w-full relative flex flex-col items-start justify-start py-[1rem] px-[2.5rem] box-border text-center text-[0.875rem] text-brand-primary font-nanumgothic">
       <div className="self-stretch bg-white h-[4.625rem] flex flex-row items-center justify-between">
         <div
           className="w-[8.5rem] relative text-[2rem] font-bagel-fat-one text-left inline-block shrink-0 cursor-pointer"
@@ -59,7 +64,7 @@ const Header: FunctionComponent<HeaderProps> = ({
         <div className="flex flex-row items-center justify-start gap-[3.125rem] text-black">
           <div
             className="w-[3.75rem] h-[4.625rem] flex flex-col items-center justify-center p-[0.312rem] box-border gap-[0.312rem] cursor-pointer"
-            onClick={onCounselClick}
+            onClick={onConsultationClick}
           >
             <div className="w-[4.563rem] h-[1.438rem] flex flex-row items-end justify-center">
               <div className="relative">상담</div>
@@ -68,7 +73,7 @@ const Header: FunctionComponent<HeaderProps> = ({
           </div>
           <div
             className="w-[3.75rem] h-[4.625rem] flex flex-col items-center justify-center p-[0.312rem] box-border gap-[0.312rem] cursor-pointer"
-            onClick={onBItAMinTextClick}
+            onClick={onMissionClick}
           >
             <div className="w-[4.563rem] h-[1.438rem] flex flex-row items-end justify-center">
               <div className="relative">미션</div>
@@ -77,7 +82,7 @@ const Header: FunctionComponent<HeaderProps> = ({
           </div>
           <div
             className="w-[3.75rem] h-[4.625rem] flex flex-col items-center justify-center p-[0.312rem] box-border gap-[0.312rem] cursor-pointer"
-            onClick={onBItAMinTextClick}
+            onClick={onHealthUPClick}
           >
             <div className="w-[4.563rem] h-[1.438rem] flex flex-row items-end justify-end">
               <div className="relative">건강</div>
@@ -89,10 +94,10 @@ const Header: FunctionComponent<HeaderProps> = ({
             </div>
             <div className="w-[3.125rem] relative rounded-sm bg-brand-sub h-[0.125rem]" />
           </div>
-          {isAdmin && (
+          {userRole === 'admin' && (
             <div
               className="w-[3.75rem] h-[4.625rem] flex flex-col items-center justify-center p-[0.312rem] box-border gap-[0.312rem] cursor-pointer"
-              onClick={onBItAMinTextClick}
+              onClick={onAdminClick}
             >
               <div className="w-[4.563rem] h-[1.438rem] flex flex-row items-end justify-center">
                 <div className="relative">관리자</div>
@@ -101,7 +106,7 @@ const Header: FunctionComponent<HeaderProps> = ({
             </div>
           )}
         </div>
-        {isLoggedIn ? (
+        {accessToken ? (
           <div className="w-[7.75rem] h-[6.125rem] flex flex-col items-start justify-end text-darkgray">
             <div className="self-stretch flex flex-row items-center justify-start gap-[0.375rem]">
               <div className="flex flex-row items-center justify-start gap-[0.437rem]">
@@ -136,7 +141,7 @@ const Header: FunctionComponent<HeaderProps> = ({
               </div>
               <div
                 className="h-[1.5rem] flex flex-row items-start justify-end cursor-pointer"
-                onClick={onBItAMinTextClick}
+                onClick={onMessageClick}
               >
                 <img
                   className="w-[1.188rem] relative h-[1.231rem]"
@@ -169,7 +174,7 @@ const Header: FunctionComponent<HeaderProps> = ({
         ) : (
           <div className="w-[7.75rem] h-[6.125rem] flex flex-row items-center justify-center gap-[0.187rem] text-dimgray">
             <div
-              className="w-[3.125rem] relative flex items-center justify-center h-[2rem] shrink-0"
+              className="w-[3.125rem] relative flex items-center justify-center h-[2rem] shrink-0 cursor-pointer"
               onClick={onLoginTextClick}
             >
               로그인
@@ -177,7 +182,10 @@ const Header: FunctionComponent<HeaderProps> = ({
             <div className="w-[1.25rem] relative text-black flex items-center justify-center h-[2rem] shrink-0">
               /
             </div>
-            <div className="relative" onClick={onSignupTextClick}>
+            <div
+              className="relative cursor-pointer"
+              onClick={onSignupTextClick}
+            >
               회원가입
             </div>
           </div>

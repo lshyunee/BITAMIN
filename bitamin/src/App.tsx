@@ -4,6 +4,7 @@ import AppRouter from 'router/AppRouter'
 import HeaderBeforeLogin from 'stories/organisms/common/HeaderBeforeLogin'
 import HeaderAfterLogin from 'stories/organisms/common/HeaderAfterLogin'
 import Footer from 'stories/organisms/common/Footer'
+import Header from './stories/organisms/common/Header'
 
 const AppContent: React.FC = () => {
   const location = useLocation()
@@ -17,6 +18,7 @@ const AppContent: React.FC = () => {
       {/* <HeaderBeforeLogin /> */}
       {/* <HeaderAfterLogin /> */}
       {/* {isLoggedIn ? <HeaderAfterLogin /> : <HeaderBeforeLogin />} */}
+      <Header />
       {!excludeHeaderPaths.includes(location.pathname) &&
         (isLoggedIn ? (
           <HeaderAfterLogin username="{username}" />
