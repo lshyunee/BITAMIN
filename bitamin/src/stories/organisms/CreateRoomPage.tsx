@@ -36,7 +36,7 @@ const CreateRoomPage: React.FC = () => {
 
     try {
       // 방 생성
-      const createdRoom: Consultation = await createRoom(roomData)
+      const createdRoom: any = await createRoom(roomData)
       console.log('Room created:', createdRoom)
 
       if (createdRoom) {
@@ -50,7 +50,8 @@ const CreateRoomPage: React.FC = () => {
         }
 
         await delay(500)
-        await joinRoom(joinData)
+        const consultation: Consultation = await joinRoom(joinData)
+        console.log(consultation)
         console.log('Room joined:', joinData)
 
         // 참여 후 다른 페이지로 이동

@@ -60,8 +60,9 @@ export const joinConsultation = create<JoinConsultationState>()(
 
       joinRoom: async (joinData: JoinData) => {
         try {
-          const data = await joinRoom(joinData)
-          set({ consultation: data.consultation })
+          const consultation = await joinRoom(joinData)
+          set({ consultation })
+          return consultation
         } catch (error) {
           console.error('Failed to join room:', error)
         }
