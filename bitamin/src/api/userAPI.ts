@@ -129,7 +129,7 @@ export const updateUserInfo = async (userInfo: any) => {
       sidoName: userInfo.sidoName,
       gugunName: userInfo.gugunName,
       dongName: userInfo.dongName,
-      // image: userInfo.image,
+      profileUrl: userInfo.profileUrl, // 기존 프로필 URL을 유지
     }
 
     const formData = new FormData()

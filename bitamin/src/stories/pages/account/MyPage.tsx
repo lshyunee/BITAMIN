@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect, ChangeEvent } from 'react'
+import { useState, useEffect, ChangeEvent, useRef } from 'react'
 import styles from 'styles/account/MyPage.module.css'
 import HospitalMap from 'stories/organisms/HospitalMap'
-import Button from 'stories/atoms/Button'
 import { fetchUserInfo, updateUserInfo } from '@/api/userAPI'
 import { fetchHealthReports } from '@/api/userAPI'
 import { useNavigate } from 'react-router-dom'
+import HeaderAfterLogin from '@/stories/organisms/common/HeaderAfterLogin'
+import Footer from '@/stories/organisms/common/Footer'
 
 const MyPage: React.FC = () => {
   const navigate = useNavigate()
@@ -16,28 +17,27 @@ const MyPage: React.FC = () => {
     sidoName: '',
     gugunName: '',
     dongName: '',
-    image: null as File | null, // 새로 업로드할 파일
-    profileUrl: '', // 서버에서 받아온 이미지 URL
+    image: null as File | null,
+    profileUrl: '',
     checkupScore: 0,
-    checkupDate: '', // 건강 보고서 날짜
+    checkupDate: '',
   })
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null) // 미리보기 URL 상태
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [initialProfileUrl, setInitialProfileUrl] = useState<string | null>(
+    null
+  )
 
-  // 타입 불일치로 초기값 number 타입으로 설정
   const [location, setLocation] = useState({
-    lat: 0, // 기본값 설정
-    lng: 0, // 기본값 설정
+    lat: 0,
+    lng: 0,
   })
 
-  const [isPhotoUploadOpen, setIsPhotoUploadOpen] = useState(false)
-  const [isFrameOpen, setFrameOpen] = useState(false)
-  const [isFrame1Open, setFrame1Open] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
   const [healthReports, setHealthReports] = useState<any[]>([])
 
-  // 점수에 따른 메시지 반환 함수
   const getScoreMessage = (score: number): string => {
     if (score <= 15) {
       return `현재 당신의 점수는 정상 범위에 속합니다. 유의미한 수준의 우울감이 나타나지 않으며, 전반적으로 안정된 상태를 유지하고 있습니다. 이러한 상태를 지속적으로 유지하기 위해 현재의 생활 습관을 잘 관리하시길 권장드립니다. 만약 기분 변화가 느껴지거나 불안함이 생긴다면, 가벼운 산책이나 취미 생활을 통해 긍정적인 기운을 유지하는 것도 도움이 될 수 있습니다.`
@@ -54,7 +54,6 @@ const MyPage: React.FC = () => {
     const getUserInfo = async () => {
       try {
         const data = await fetchUserInfo()
-        // console.log('Fetched user data:', data) // 데이터를 확인하는 로그
         setUserInfo((prevUserInfo) => ({
           ...prevUserInfo,
           email: data.email,
@@ -66,8 +65,8 @@ const MyPage: React.FC = () => {
           dongName: data.dongName,
           profileUrl: data.profileUrl,
         }))
-        // 서버에서 받은 프로필 이미지 URL을 미리보기 URL로 설정
         setPreviewUrl(data.profileUrl)
+        setInitialProfileUrl(data.profileUrl) // 초기 profileUrl 설정
 
         setLocation({
           lat: parseFloat(data.lat),
@@ -82,7 +81,6 @@ const MyPage: React.FC = () => {
       try {
         const healthReports = await fetchHealthReports()
         if (healthReports.length > 0) {
-          // 가장 최근의 보고서 선택 (마지막 항목)
           const latestReport = healthReports[healthReports.length - 1]
           setUserInfo((prevUserInfo) => ({
             ...prevUserInfo,
@@ -99,35 +97,12 @@ const MyPage: React.FC = () => {
     getHealthReports()
   }, [])
 
-  const openPhotoUpload = useCallback(() => {
-    setIsPhotoUploadOpen(true)
-  }, [])
+  const handleImageClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click() // 이미지 클릭 시 파일 입력 창 열기
+    }
+  }
 
-  const closePhotoUpload = useCallback(() => {
-    setIsPhotoUploadOpen(false)
-  }, [])
-
-  const openFrame = useCallback(() => {
-    setFrameOpen(true)
-  }, [])
-
-  const closeFrame = useCallback(() => {
-    setFrameOpen(false)
-  }, [])
-
-  const openFrame1 = useCallback(() => {
-    setFrame1Open(true)
-  }, [])
-
-  const closeFrame1 = useCallback(() => {
-    setFrame1Open(false)
-  }, [])
-
-  const onBItAMinTextClick = useCallback(() => {
-    // Add your code here
-  }, [])
-
-  // 수정 시 사용
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target
     if (name === 'image' && files && files[0]) {
@@ -136,9 +111,8 @@ const MyPage: React.FC = () => {
         ...prevUserInfo,
         image: imageFile,
       }))
-      // 새로 업로드한 이미지의 미리보기 URL 생성
       const previewUrl = URL.createObjectURL(imageFile)
-      setPreviewUrl(previewUrl) // 미리보기 URL을 상태에 저장
+      setPreviewUrl(previewUrl)
     } else {
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
@@ -147,256 +121,192 @@ const MyPage: React.FC = () => {
     }
   }
 
-  // 사용자 정보 저장 시
   const handleUpdateUserInfo = async () => {
     try {
-      await updateUserInfo(userInfo)
+      // 이미지를 변경하지 않았다면 initialProfileUrl을 사용
+      const updatedUserInfo = {
+        ...userInfo,
+        profileUrl: userInfo.image ? userInfo.profileUrl : userInfo.profileUrl,
+      }
+      console.log('Updated user info:', updatedUserInfo) // 여기서 profileUrl 값 확인
+
+      await updateUserInfo(updatedUserInfo)
       alert('정보가 성공적으로 수정되었습니다.')
       setIsEditing(false)
-      // 서버에 저장된 최신 프로필 사진 불러오기
       const data = await fetchUserInfo()
-      setPreviewUrl(data.imageUrl)
+      setPreviewUrl(data.profileUrl)
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
         profileUrl: data.profileUrl,
-        image: null, // 업로드된 파일 초기화
+        image: null,
       }))
+      setInitialProfileUrl(data.profileUrl) // 최신 프로필 URL을 초기값으로 갱신
     } catch (error) {
       console.error('Error updating user info:', error)
       alert('정보 수정에 실패했습니다.')
     }
   }
-  // 점수에 따른 설명을 가져옴
+
   const scoreDescription = getScoreMessage(userInfo.checkupScore)
+
+  const handleEditClick = async () => {
+    if (isEditing) {
+      await handleUpdateUserInfo() // 수정 모드에서 나올 때 정보 업데이트
+    }
+    setIsEditing(!isEditing)
+  }
 
   return (
     <>
-      <Button
-        label={isEditing ? '취소' : '정보 수정'}
-        type={'DEFAULT'}
-        onClick={() => {
-          if (isEditing) {
-            setIsEditing(false)
-            // 수정 취소 시 서버에서 최신 정보를 다시 불러옴
-            const getUserInfo = async () => {
-              try {
-                const data = await fetchUserInfo()
-                setPreviewUrl(data.profileUrl)
-                setUserInfo((prevUserInfo) => ({
-                  ...prevUserInfo,
-                  email: data.email,
-                  name: data.name,
-                  nickname: data.nickname,
-                  birthday: data.birthday,
-                  sidoName: data.sidoName,
-                  gugunName: data.gugunName,
-                  dongName: data.dongName,
-                  profileUrl: data.profileUrl,
-                  image: null,
-                }))
-              } catch (error) {
-                console.error('Error fetching user info on cancel:', error)
-              }
-            }
-
-            getUserInfo()
-          } else {
-            setIsEditing(true)
-          }
-        }}
-      />
+      <HeaderAfterLogin username="{username}" />
       <div className={styles.div}>
-        {/* 화면 상단에 이미지 표시 */}
-        <div>
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="미리보기 이미지"
-              className={styles.image}
+        <div className={styles.InfoBox}>
+          <div className={styles.child}>
+            <div className={styles.item} onClick={handleImageClick}>
+              {previewUrl ? (
+                <img src={previewUrl} alt="미리보기 이미지" />
+              ) : (
+                <div className={styles.placeholder}>이미지를 첨부하세요</div>
+              )}
+            </div>
+            <input
+              type="file"
+              name="image"
+              accept=".jpg,.jpeg,.png"
+              ref={fileInputRef}
+              onChange={handleInputChange}
+              style={{ display: 'none' }}
             />
-          ) : (
-            <div>이미지를 불러오는 중...</div>
-          )}
-        </div>
-        {/* 나머지 컴포넌트 */}
-        <div className={styles.child} />
-        <div className={styles.item} />
-        <div className={styles.frameParent}>
-          {isEditing ? (
-            <div>
-              <input
-                type="text"
-                name="email"
-                value={userInfo.email}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="name"
-                value={userInfo.name}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="nickname"
-                value={userInfo.nickname}
-                onChange={handleInputChange}
-              />
-              <input
-                type="date"
-                name="birthday"
-                value={userInfo.birthday}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="sidoName"
-                value={userInfo.sidoName}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="gugunName"
-                value={userInfo.gugunName}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="dongName"
-                value={userInfo.dongName}
-                onChange={handleInputChange}
-              />
-              <input
-                type="file"
-                name="image"
-                accept=".jpg,.jpeg,.png"
-                onChange={handleInputChange}
-              />
+          </div>
+          <div className={styles.frameParent}>
+            {isEditing ? (
+              <div>
+                <input
+                  type="text"
+                  name="email"
+                  value={userInfo.email}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="name"
+                  value={userInfo.name}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="nickname"
+                  value={userInfo.nickname}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="date"
+                  name="birthday"
+                  value={userInfo.birthday}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="sidoName"
+                  value={userInfo.sidoName}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="gugunName"
+                  value={userInfo.gugunName}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="dongName"
+                  value={userInfo.dongName}
+                  onChange={handleInputChange}
+                />
+              </div>
+            ) : (
+              <div>
+                <div className={styles.categoryContainer}>
+                  <div className={styles.categoryTitle}>Email</div>
+                  <div className={styles.categoryContent}>{userInfo.email}</div>
+                </div>
+                <div className={styles.categoryContainer}>
+                  <div className={styles.categoryTitle}>Name</div>
+                  <div className={styles.categoryContent}>{userInfo.name}</div>
+                </div>
+                <div className={styles.categoryContainer}>
+                  <div className={styles.categoryTitle}>Nickname</div>
+                  <div className={styles.categoryContent}>
+                    {userInfo.nickname}
+                  </div>
+                </div>
+                <div className={styles.categoryContainer}>
+                  <div className={styles.categoryTitle}>Birthday</div>
+                  <div className={styles.categoryContent}>
+                    {userInfo.birthday}
+                  </div>
+                </div>
+                <div className={styles.categoryContainer}>
+                  <div className={styles.categoryTitle}>Address</div>
+                  <div className={styles.categoryContent}>
+                    {userInfo.sidoName} {userInfo.gugunName} {userInfo.dongName}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <Button
-                label={'저장'}
-                type={'DEFAULT'}
-                onClick={handleUpdateUserInfo}
-              />
+            <div className={styles.buttonContainer}>
+              <div
+                className={`${styles.container} ${styles.buttonStyle}`}
+                onClick={handleEditClick}
+              >
+                <div>{isEditing ? '저장' : '정보 수정'}</div>
+              </div>
+              <div
+                className={`${styles.container} ${styles.buttonStyle}`}
+                onClick={() => navigate('/change-password')}
+              >
+                <div className={styles.div6}>비밀번호 변경</div>
+              </div>
             </div>
-          ) : (
-            <div>
-              <div>{userInfo.email}</div>
-              <div>{userInfo.name}</div>
-              <div>{userInfo.nickname}</div>
-              <div>{userInfo.birthday}</div>
-              <div>{userInfo.sidoName}</div>
-              <div>{userInfo.gugunName}</div>
-              <div>{userInfo.dongName}</div>
+          </div>
+          <div className={styles.inner} />
+          <div className={styles.div4}>마이페이지</div>
+        </div>
+        <div className={styles.rectangleDiv}>
+          <div className={styles.resultContainer}>
+            <div className={styles.div10}>검사 결과</div>
+            <div className={styles.div8}>{userInfo.checkupDate}의 점수</div>
+            <div className={styles.div11}>
+              <span className={styles.span}>{userInfo.checkupScore}</span>
+              <span className={styles.span1}>점</span>
             </div>
-          )}
+            <div className={styles.div12}>
+              검사 소견
+              <br />
+              {scoreDescription}
+            </div>
+          </div>
         </div>
-        <div className={styles.inner} />
-        <div className={styles.div4}>마이페이지</div>
-        <img
-          className={styles.imageAddIcon}
-          alt=""
-          src="image-add.svg"
-          onClick={openPhotoUpload}
-        />
-        <div className={styles.div5} onClick={openPhotoUpload}></div>
-        <div className={styles.wrapper} onClick={openFrame}></div>
-        <div
-          className={styles.container}
-          onClick={() => navigate('/change-password')}
-        >
-          <div className={styles.div6}>비밀번호 변경</div>
-        </div>
-        <div className={styles.rectangleDiv} />
-        <div className={styles.div8}>7월 21일의 점수</div>
+
         <div className={styles.div9}>내 주변 병원 찾기</div>
-        <div className={styles.div10}>검사 결과</div>
-        <div className={styles.div11}>
-          <span className={styles.span}>{userInfo.checkupScore}</span>
-          <span className={styles.span1}>점</span>
-        </div>
-        <div className={styles.div12}>{scoreDescription}</div>
         <div className={styles.child1} />
         <script
           type="text/javascript"
           src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_APP_KAKAOMAP_KEY}&libraries=services"
         ></script>
+        <div className={styles.div66}>
+          <b>{userInfo.sidoName} </b>
+          <b>{userInfo.gugunName}</b>
+          <div className={styles.inner} />
+          <span className={styles.span4}>
+            <span>에 있는</span>
+            <span className={styles.span5}>{` `}</span>
+          </span>
+          <b>정신건강의학과</b>
+        </div>
         <div className={styles.mapWrapper}>
           <HospitalMap lat={location.lat} lng={location.lng} />
-        </div>
-        <div className={styles.div37}>검사 소견</div>
-        <div className={styles.navbar}>
-          <div className={styles.bitamin} onClick={onBItAMinTextClick}>
-            BItAMin
-          </div>
-          <div className={styles.parent}>
-            <div className={styles.div38} onClick={onBItAMinTextClick}>
-              <div className={styles.frame}>
-                <div className={styles.div6}>상담</div>
-              </div>
-              <div className={styles.child9} />
-            </div>
-            <div className={styles.div38} onClick={onBItAMinTextClick}>
-              <div className={styles.frame}>
-                <div className={styles.div6}>미션</div>
-              </div>
-              <div className={styles.child9} />
-            </div>
-            <div className={styles.div38} onClick={onBItAMinTextClick}>
-              <div className={styles.group}>
-                <div className={styles.div6}>건강</div>
-                <div className={styles.upWrapper}>
-                  <div className={styles.up}>UP !</div>
-                </div>
-              </div>
-              <div className={styles.child9} />
-            </div>
-            <div className={styles.div38} onClick={onBItAMinTextClick}>
-              <div className={styles.frame}>
-                <div className={styles.div6}>관리자</div>
-              </div>
-              <div className={styles.child9} />
-            </div>
-          </div>
-          <div className={styles.div46}>
-            <div className={styles.frameParent3}>
-              <div className={styles.personcircleParent}>
-                <img
-                  className={styles.personcircleIcon}
-                  alt=""
-                  src="PersonCircle.svg"
-                />
-                <div className={styles.frameParent4}>
-                  <div className={styles.wrapper3}>
-                    <div className={styles.div47}>
-                      <span className={styles.txt}>
-                        <span>김싸피</span>
-                        <span className={styles.span2}>
-                          <span>{` `}</span>
-                          <span className={styles.span3}>님</span>
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.vectorWrapper}>
-                    <img
-                      className={styles.vectorIcon}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.wrapper4} onClick={onBItAMinTextClick}>
-                <img className={styles.icon} alt="" src="쪽지 버튼.svg" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={styles.rectangleParent}>
-          <div className={styles.groupChild} />
-
-          <div className={styles.div48}>나의 차트</div>
         </div>
         <div className={styles.groupParent}>
           <div className={styles.chartParent}>
@@ -454,8 +364,6 @@ const MyPage: React.FC = () => {
                 <div className={styles.div54}>10</div>
               </div>
             </div>
-            <div className={styles.div55}>(주차)</div>
-            <div className={styles.div56}>(점수)</div>
           </div>
           <div className={styles.group9}>
             <img className={styles.vectorIcon8} alt="" src="Vector.svg" />
@@ -493,15 +401,6 @@ const MyPage: React.FC = () => {
             <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
             <div className={styles.div57}>9</div>
           </div>
-        </div>
-        <div className={styles.div66}>
-          <b>{userInfo.sidoName} </b>
-          <b>{userInfo.gugunName}</b>
-          <span className={styles.span4}>
-            <span>에 있는</span>
-            <span className={styles.span5}>{` `}</span>
-          </span>
-          <b>정신과</b>
         </div>
       </div>
     </>
