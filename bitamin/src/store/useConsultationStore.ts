@@ -5,12 +5,16 @@ import {
   Consultation,
   ConsultationList,
   CreateConsultation,
+  JoinConsultation,
+  ChatLog,
+  Message,
 } from 'ts/consultationType'
 import {
   fetchConsultations,
   joinRoom,
   joinRandomRoom,
   createRoom,
+  sendChatGPTMessage,
 } from 'api/consultationAPI'
 
 // Consultation List 상태 관리
@@ -44,11 +48,11 @@ type JoinData = Pick<
   Consultation,
   'id' | 'isPrivated' | 'password' | 'startTime' | 'sessionId'
 > & {
-  password: string | null
+  password: string
 }
 
 interface JoinConsultationState {
-  consultation: Consultation | null
+  joinconsultation: JoinConsultation | null
   joinRoom: (joinData: JoinData) => Promise<void>
   resetConsultation: () => void
 }
@@ -56,20 +60,26 @@ interface JoinConsultationState {
 export const joinConsultation = create<JoinConsultationState>()(
   persist(
     (set) => ({
-      consultation: null,
+      joinconsultation: null,
 
       joinRoom: async (joinData: JoinData) => {
         try {
+          // 방에 참여하고 결과 데이터를 consultation으로 받음
           const consultation = await joinRoom(joinData)
-          set({ consultation })
+
+          // 받은 consultation 데이터를 zustand 스토어에 저장
+          set({ joinconsultation: consultation })
+
+          // consultation 데이터를 반환하여 로컬에서도 사용 가능하게 함
           return consultation
         } catch (error) {
           console.error('Failed to join room:', error)
+          throw error // 에러 발생 시 상위 호출 스택으로 에러를 전달
         }
       },
 
       resetConsultation: () => {
-        set({ consultation: null })
+        set({ joinconsultation: null })
       },
     }),
     {
@@ -81,7 +91,9 @@ export const joinConsultation = create<JoinConsultationState>()(
 // 방 생성 상태 관리
 interface CreateRoomState {
   createdRoom: Consultation | null
-  createRoom: (roomData: CreateConsultation) => Promise<void>
+  createRoom: (
+    roomData: CreateConsultation
+  ) => Promise<Consultation | undefined>
   resetCreatedRoom: () => void
 }
 
@@ -97,6 +109,7 @@ export const useCreateRoom = create<CreateRoomState>()(
           return createdRoom
         } catch (error) {
           console.error('Failed to create room:', error)
+          return undefined // 또는 다른 적절한 기본값을 반환할 수 있습니다.
         }
       },
 
@@ -132,5 +145,74 @@ export const useJoinRandomRoom = create<joinRandomRoomState>()(
       },
     }),
     { name: 'consultation-storage' }
+  )
+)
+
+// GPT 메시지 상태 관리
+interface ChatState {
+  chatLog: ChatLog
+  sendMessage: (
+    user: string,
+    content: string,
+    category: string
+  ) => Promise<void>
+  resetChatLog: () => void
+}
+
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set, get) => ({
+      chatLog: {},
+
+      sendMessage: async (user: string, content: string, category: string) => {
+        try {
+          const currentChatLog = get().chatLog
+
+          // 유저의 메시지 배열을 가져오고 없으면 빈 배열을 할당
+          const userMessages = currentChatLog[user]?.messages || []
+
+          // 유저 메시지 추가
+          const userMessage = {
+            role: 'user' as const,
+            content,
+          }
+
+          // API 요청
+          const response = await sendChatGPTMessage(
+            user,
+            content,
+            category,
+            userMessages
+          )
+
+          // 응답 메시지 추가
+          const assistantMessage = {
+            role: 'assistant' as const,
+            content: response.gptResponses[user].content,
+          }
+
+          // 상태 업데이트
+          set((state) => ({
+            chatLog: {
+              ...state.chatLog,
+              [user]: {
+                userId: user,
+                messages: [...userMessages, userMessage, assistantMessage],
+              },
+            },
+          }))
+        } catch (error) {
+          console.error('Failed to send message to ChatGPT:', error)
+          throw error
+        }
+      },
+
+      resetChatLog: () => {
+        set({ chatLog: {} })
+      },
+    }),
+    {
+      name: 'chat-log-storage',
+    }
   )
 )

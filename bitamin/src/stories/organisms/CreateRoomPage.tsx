@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { joinConsultation, useCreateRoom } from 'store/useConsultationStore'
-import { CreateConsultation, Consultation } from 'ts/consultationType' // 필요한 타입 임포트
+import {
+  CreateConsultation,
+  Consultation,
+  CurrentConsultaion,
+} from 'ts/consultationType' // 필요한 타입 임포트
 
 const CreateRoomPage: React.FC = () => {
-  // 지연을 위한 함수
-  const delay = (ms: number): Promise<void> => {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-  }
-
   const [category, setCategory] = useState<string>('미술')
   const [title, setTitle] = useState<string>('')
   const [isPrivated, setIsPrivated] = useState<number>(0)
@@ -20,8 +19,9 @@ const CreateRoomPage: React.FC = () => {
 
   // zustand에서 필요한 상태와 함수를 가져오기
   const { createRoom } = useCreateRoom()
-  const { joinRoom } = joinConsultation((state) => ({
+  const { joinRoom, setJoinConsultation } = joinConsultation((state) => ({
     joinRoom: state.joinRoom,
+    setJoinConsultation: state.setJoinConsultation,
   }))
 
   const handleSubmit = async () => {
@@ -29,33 +29,40 @@ const CreateRoomPage: React.FC = () => {
       category,
       title,
       isPrivated,
-      password: isPrivated === 1 ? password : null,
+      password: isPrivated === 1 ? password : '',
       startTime,
       endTime,
     }
 
     try {
       // 방 생성
-      const createdRoom: any = await createRoom(roomData)
+      const createdRoom: Consultation | null = await createRoom(roomData)
       console.log('Room created:', createdRoom)
 
       if (createdRoom) {
         // 생성된 방에 바로 참여
-        const joinData = {
+        const joinData: CurrentConsultaion = {
           id: createdRoom.id,
           isPrivated: createdRoom.isPrivated,
-          password: createdRoom.isPrivated ? password : null,
+          password: createdRoom.isPrivated ? password : '',
           startTime: createdRoom.startTime,
           sessionId: createdRoom.sessionId,
         }
 
-        await delay(500)
-        const consultation: Consultation = await joinRoom(joinData)
-        console.log(consultation)
-        console.log('Room joined:', joinData)
+        console.log('Join data:', joinData)
 
-        // 참여 후 다른 페이지로 이동
-        navigate('/consult')
+        // 방에 참여
+        const consultation = await joinRoom(joinData)
+        console.log('Room joined:', consultation)
+
+        setJoinConsultation(consultation)
+        if (consultation !== null) {
+          // zustand에 참여한 방 정보 저장
+          setJoinConsultation(consultation)
+
+          // 참여 후 다른 페이지로 이동
+          navigate('/consult')
+        }
       }
     } catch (error) {
       console.error('Failed to create or join room:', error)

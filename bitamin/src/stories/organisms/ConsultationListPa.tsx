@@ -18,8 +18,9 @@ const ConsultationListPa: React.FC = () => {
     })
   )
 
-  const { joinRoom } = joinConsultation((state) => ({
+  const { joinRoom, setJoinConsultation } = joinConsultation((state) => ({
     joinRoom: state.joinRoom,
+    setJoinConsultation: state.setJoinConsultation,
   }))
 
   // 로딩 및 에러 상태 추가
@@ -67,7 +68,6 @@ const ConsultationListPa: React.FC = () => {
   }
 
   const handleJoinRoom = async (consultation: Consultation) => {
-    // Consultation 타입 적용
     try {
       const joinData = {
         id: consultation.id,
@@ -77,7 +77,14 @@ const ConsultationListPa: React.FC = () => {
         sessionId: consultation.sessionId,
       }
 
-      await joinRoom(joinData)
+      // joinRoom이 성공적으로 완료되기를 기다립니다.
+      const consult: Consultation = await joinRoom(joinData)
+
+      // joinRoom이 완료된 후 콘솔에 로그를 출력합니다.
+      console.log('Join Room Result:', consult)
+      console.log('Room joined:', joinData)
+      setJoinConsultation(consultation)
+      // 페이지를 이동시킵니다.
       navigate('/consult')
     } catch (error) {
       console.error('Failed to join the room:', error)
@@ -88,7 +95,7 @@ const ConsultationListPa: React.FC = () => {
   const handleJoinRandomRoom = async (type: string) => {
     try {
       await joinRandomRoom(type)
-      alert(`Fetched random participants for ${type}`)
+      // alert(`Fetched random participants for ${type}`)
     } catch (error) {
       alert('Failed to fetch random participants')
       console.error('Error fetching random participants:', error)

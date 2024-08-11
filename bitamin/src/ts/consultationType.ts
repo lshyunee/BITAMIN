@@ -23,7 +23,7 @@ export interface RandomJoin {
 export interface CurrentConsultaion {
   id: number
   isPrivated: number
-  password?: string | null
+  password?: string
   startTime: string
   sessionId: string
 }
@@ -35,15 +35,15 @@ export interface JoinConsultation {
   id: number
   memberId: number
   nickname: string
-  profileKey: string
-  profileUrl: string
+  profileKey: string | null
+  profileUrl: string | null
 }
 
 export interface CreateConsultation {
   category: string
   title: string
   isPrivated: number
-  password?: string | null
+  password?: string
   startTime: string
   endTime: string
 }
@@ -60,7 +60,38 @@ export interface RoomData {
   category: string
   title: string
   isPrivated: number
-  password?: string | null
+  password?: string
   startTime: string
   endTime: string
+}
+
+export interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface ChatEntry {
+  userId: string
+  messages: Message[]
+}
+
+export interface ChatLog {
+  [userId: string]: ChatEntry
+}
+
+export interface ChatGPTRequest {
+  gptCompletions: {
+    [userId: string]: {
+      messages: Message[]
+    }
+  }
+}
+
+export interface ChatGPTResponse {
+  gptResponses: {
+    [userId: string]: {
+      role: 'assistant'
+      content: string
+    }
+  }
 }

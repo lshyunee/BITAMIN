@@ -1,7 +1,7 @@
-// src/store/useUserStore.ts
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { fetchUserInfo } from 'api/userAPI'
-import { User } from 'types/userTypes'
+import { User } from 'ts/userType'
 
 interface UserState {
   user: User | null
@@ -10,32 +10,38 @@ interface UserState {
   updateProfileUrl: (url: string) => void
 }
 
-const useUserStore = create<UserState>((set) => ({
-  user: null, // 기본적으로 유저 정보는 null로 초기화
+const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
 
-  // 유저 정보를 가져오는 함수
-  fetchUser: async () => {
-    try {
-      const userData = await fetchUserInfo()
-      set({ user: userData }) // 가져온 유저 정보를 상태에 저장
-    } catch (error) {
-      console.error('Failed to fetch user information:', error)
+      fetchUser: async () => {
+        try {
+          const userData = await fetchUserInfo()
+          console.log('Fetched User Info in Store:', userData) // 유저 정보 로그 확인
+          set({ user: userData })
+          return userData
+        } catch (error) {
+          console.error('Failed to fetch user information:', error)
+        }
+      },
+
+      setUserImage: (image: File) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, image } : null,
+        }))
+      },
+
+      updateProfileUrl: (url: string) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, profileUrl: url } : null,
+        }))
+      },
+    }),
+    {
+      name: 'user-storage',
     }
-  },
-
-  // 유저 이미지 업데이트 함수
-  setUserImage: (image: File) => {
-    set((state) => ({
-      user: { ...state.user, image },
-    }))
-  },
-
-  // 프로필 URL 업데이트 함수
-  updateProfileUrl: (url: string) => {
-    set((state) => ({
-      user: { ...state.user, profileUrl: url },
-    }))
-  },
-}))
+  )
+)
 
 export default useUserStore
