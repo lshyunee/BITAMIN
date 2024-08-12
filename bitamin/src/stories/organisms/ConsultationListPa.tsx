@@ -170,14 +170,13 @@ const ConsultationListPa: React.FC = () => {
         </span>
       </p>
 
-      {isModalOpen && (
-        <CreateRoomModal isOpen={isModalOpen} onClose={closeModal} />
-      )}
+      {isModalOpen && <CreateRoomModal onClose={closeModal} />}
 
       {isRandomModalOpen && (
         <RandomConsultationModal
           isOpen={isRandomModalOpen}
           onClose={closeRandomModal}
+          onJoin={handleJoinRandomRoom}
         />
       )}
     </div>
