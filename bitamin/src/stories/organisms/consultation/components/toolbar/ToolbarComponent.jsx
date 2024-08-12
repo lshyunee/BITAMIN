@@ -17,8 +17,12 @@ import StopScreenShare from '@material-ui/icons/StopScreenShare'
 import Tooltip from '@material-ui/core/Tooltip'
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew'
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer'
+import ChatIcon from '@material-ui/icons/Chat'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
 
 import IconButton from '@material-ui/core/IconButton'
+import { useChatStore } from '../../../../../store/useChatStore' // GPT 상태 관리 불러오기
 
 // const logo = require('../../assets/images/openvidu_logo.png')
 
@@ -34,6 +38,13 @@ export default class ToolbarComponent extends Component {
     this.switchCamera = this.switchCamera.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
     this.toggleChat = this.toggleChat.bind(this)
+    this.state = {
+      showGptInput: false,
+      gptInput: '',
+    }
+    this.toggleGptInput = this.toggleGptInput.bind(this)
+    this.handleGptInputChange = this.handleGptInputChange.bind(this)
+    this.handleSendGptRequest = this.handleSendGptRequest.bind(this)
   }
 
   micStatusChanged() {
@@ -69,9 +80,32 @@ export default class ToolbarComponent extends Component {
     this.props.toggleChat()
   }
 
+  toggleGptInput() {
+    this.setState({ showGptInput: !this.state.showGptInput })
+  }
+
+  handleGptInputChange(event) {
+    this.setState({ gptInput: event.target.value })
+  }
+
+  async handleSendGptRequest() {
+    const { gptInput } = this.state
+    if (gptInput.trim() !== '') {
+      try {
+        const { sendMessage } = useChatStore.getState() // GPT 메시지 전송 함수 가져오기
+        await sendMessage('user1', gptInput, '미술') // 예시로 'user1'을 사용
+      } catch (error) {
+        console.error('Failed to send GPT request:', error)
+      } finally {
+        this.setState({ showGptInput: false, gptInput: '' })
+      }
+    }
+  }
+
   render() {
     const mySessionId = this.props.sessionId
     const localUser = this.props.user
+    const { showGptInput, gptInput } = this.state
     return (
       <AppBar className="toolbar" id="header">
         <Toolbar className="toolbar">
@@ -166,6 +200,35 @@ export default class ToolbarComponent extends Component {
                 <QuestionAnswer />
               </Tooltip>
             </IconButton>
+            <IconButton
+              color="inherit"
+              onClick={this.toggleGptInput}
+              id="navGptButton"
+            >
+              <Tooltip title="GPT">
+                <ChatIcon />
+              </Tooltip>
+            </IconButton>
+
+            {showGptInput && (
+              <div className="gptInputContainer">
+                <TextField
+                  value={gptInput}
+                  onChange={this.handleGptInputChange}
+                  placeholder="Ask GPT..."
+                  variant="outlined"
+                  size="small"
+                />
+                <Button
+                  onClick={this.handleSendGptRequest}
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                >
+                  Send
+                </Button>
+              </div>
+            )}
           </div>
         </Toolbar>
       </AppBar>
