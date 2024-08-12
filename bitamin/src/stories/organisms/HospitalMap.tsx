@@ -167,7 +167,6 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
         내 동네로 돌아가기
       </button>
       <div style={{ marginTop: '20px' }}>
-        <h2>검색된 병원 목록</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
           {places.map((place, index) => (
             <div
@@ -178,7 +177,7 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
                 padding: '10px',
                 borderRadius: '8px',
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                color: selectedIndex === index ? 'green' : 'black',
+                color: selectedIndex === index ? '#ff713c' : 'black',
               }}
             >
               <strong>

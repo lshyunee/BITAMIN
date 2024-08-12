@@ -1,14 +1,30 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react'
 import styles from 'styles/account/MyPage.module.css'
 import HospitalMap from 'stories/organisms/HospitalMap'
-import { fetchUserInfo, updateUserInfo } from '@/api/userAPI'
-import { fetchHealthReports } from '@/api/userAPI'
+import {
+  fetchUserInfo,
+  updateUserInfo,
+  checkEmail,
+  checkNickname,
+  fetchSidoNames,
+  fetchGugunNames,
+  fetchDongNames,
+  fetchHealthReports,
+} from '@/api/userAPI'
 import { useNavigate } from 'react-router-dom'
-import HeaderAfterLogin from '@/stories/organisms/common/HeaderAfterLogin'
-import Footer from '@/stories/organisms/common/Footer'
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 
 const MyPage: React.FC = () => {
-  const navigate = useNavigate()
   const [userInfo, setUserInfo] = useState({
     email: '',
     name: '',
@@ -22,12 +38,23 @@ const MyPage: React.FC = () => {
     checkupScore: 0,
     checkupDate: '',
   })
-
+  const [emailValid, setemailValid] = useState<boolean | null>(null)
+  const [nicknameValid, setNicknameValid] = useState<boolean | null>(null)
+  const [sidoNames, setSidoNames] = useState<string[]>([])
+  const [gugunNames, setGugunNames] = useState<string[]>([])
+  const [dongNames, setDongNames] = useState<string[]>([])
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const navigate = useNavigate()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [initialProfileUrl, setInitialProfileUrl] = useState<string | null>(
     null
   )
+  const [selectedResult, setSelectedResult] = useState<{
+    date: string
+    score: number
+  } | null>(null)
 
   const [location, setLocation] = useState({
     lat: 0,
@@ -35,8 +62,10 @@ const MyPage: React.FC = () => {
   })
 
   const [isEditing, setIsEditing] = useState(false)
+  const [isImageDeleted, setIsImageDeleted] = useState(false)
 
   const [healthReports, setHealthReports] = useState<any[]>([])
+  const [chartData, setChartData] = useState<any[]>([]) // 차트 데이터 상태 추가
 
   const getScoreMessage = (score: number): string => {
     if (score <= 15) {
@@ -72,6 +101,18 @@ const MyPage: React.FC = () => {
           lat: parseFloat(data.lat),
           lng: parseFloat(data.lng),
         })
+        const sidoNames = await fetchSidoNames()
+        setSidoNames(sidoNames)
+
+        if (data.sidoName) {
+          const gugunNames = await fetchGugunNames(data.sidoName)
+          setGugunNames(gugunNames)
+        }
+
+        if (data.gugunName) {
+          const dongNames = await fetchDongNames(data.sidoName, data.gugunName)
+          setDongNames(dongNames)
+        }
       } catch (error) {
         console.error('Error fetching user info:', error)
       }
@@ -80,14 +121,14 @@ const MyPage: React.FC = () => {
     const getHealthReports = async () => {
       try {
         const healthReports = await fetchHealthReports()
-        if (healthReports.length > 0) {
-          const latestReport = healthReports[healthReports.length - 1]
-          setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo,
-            checkupScore: latestReport.checkupScore,
-            checkupDate: latestReport.checkupDate,
-          }))
-        }
+        setHealthReports(healthReports)
+
+        // 차트 데이터 준비
+        const chartData = healthReports.map((report: any) => ({
+          date: report.checkupDate, // X축에 표시될 날짜
+          score: report.checkupScore, // Y축에 표시될 점수
+        }))
+        setChartData(chartData)
       } catch (error) {
         console.error('Error fetching health reports:', error)
       }
@@ -102,45 +143,113 @@ const MyPage: React.FC = () => {
       fileInputRef.current?.click() // 이미지 클릭 시 파일 입력 창 열기
     }
   }
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteImage = () => {
+    setIsImageDeleted(true)
+    setPreviewUrl(null)
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
+      image: null,
+      profileUrl: 'null', // 서버로 "null" 값 전송
+    }))
+  }
+  const handleInputChange = async (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, files } = e.target
     if (name === 'image' && files && files[0]) {
       const imageFile = files[0]
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
         image: imageFile,
+        profileUrl: URL.createObjectURL(imageFile),
       }))
-      const previewUrl = URL.createObjectURL(imageFile)
-      setPreviewUrl(previewUrl)
+      setPreviewUrl(URL.createObjectURL(imageFile))
+      setIsImageDeleted(false) // 이미지가 새로 선택되었으므로 삭제 상태 해제
     } else {
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
         [name]: value,
       }))
+
+      if (name === 'email' && value) {
+        try {
+          const result = await checkEmail(value)
+          setemailValid(result === 0) // 0이면 사용 가능, 1이면 중복
+        } catch (error) {
+          setemailValid(null)
+          setError('이메일 중복 확인 중 오류가 발생했습니다.')
+        }
+      }
+
+      if (name === 'nickname' && value) {
+        try {
+          const result = await checkNickname(value)
+          setNicknameValid(result === 0) // 0이면 사용 가능, 1이면 중복
+        } catch (error) {
+          setNicknameValid(null)
+          setError('닉네임 중복 확인 중 오류가 발생했습니다.')
+        }
+      }
+
+      if (name === 'sidoName') {
+        // 시/도를 선택하면 구/군 목록을 로드
+        try {
+          const gugunNames = await fetchGugunNames(value)
+          setGugunNames(gugunNames)
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            sidoName: value,
+            gugunName: '',
+            dongName: '',
+          }))
+          setDongNames([]) // 구/군 선택 전 동 목록 초기화
+        } catch (error) {
+          console.error('구/군 목록을 가져오는 중 오류 발생:', error)
+        }
+      }
+
+      if (name === 'gugunName') {
+        try {
+          const dongNames = await fetchDongNames(userInfo.sidoName, value)
+          setDongNames(dongNames)
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            gugunName: value,
+            dongName: '',
+          }))
+        } catch (error) {
+          console.error('동 목록을 가져오는 중 오류 발생:', error)
+        }
+      }
     }
   }
 
   const handleUpdateUserInfo = async () => {
     try {
-      // 이미지를 변경하지 않았다면 initialProfileUrl을 사용
+      const profileUrlToUpdate = isImageDeleted
+        ? 'null' // 이미지가 삭제된 경우
+        : userInfo.image // 새로운 이미지가 있는 경우
+          ? userInfo.profileUrl
+          : initialProfileUrl // 이미지 수정이 없으면 기존 프로필 URL 유지
+
       const updatedUserInfo = {
         ...userInfo,
-        profileUrl: userInfo.image ? userInfo.profileUrl : userInfo.profileUrl,
+        profileUrl: profileUrlToUpdate,
       }
-      console.log('Updated user info:', updatedUserInfo) // 여기서 profileUrl 값 확인
 
       await updateUserInfo(updatedUserInfo)
       alert('정보가 성공적으로 수정되었습니다.')
       setIsEditing(false)
+
       const data = await fetchUserInfo()
       setPreviewUrl(data.profileUrl)
       setUserInfo((prevUserInfo) => ({
         ...prevUserInfo,
         profileUrl: data.profileUrl,
-        image: null,
+        image: null, // 이미지를 초기화
       }))
       setInitialProfileUrl(data.profileUrl) // 최신 프로필 URL을 초기값으로 갱신
+      setIsImageDeleted(false) // 이미지 삭제 상태 초기화
     } catch (error) {
       console.error('Error updating user info:', error)
       alert('정보 수정에 실패했습니다.')
@@ -156,15 +265,30 @@ const MyPage: React.FC = () => {
     setIsEditing(!isEditing)
   }
 
+  const handleChartClick = (data: any) => {
+    if (data && data.activeLabel && data.activePayload) {
+      const selectedDate = data.activeLabel
+      const selectedScore = data.activePayload[0].value
+      setSelectedResult({ date: selectedDate, score: selectedScore })
+    }
+  }
+
   return (
     <>
-      <HeaderAfterLogin username="{username}" />
       <div className={styles.div}>
         <div className={styles.InfoBox}>
           <div className={styles.child}>
             <div className={styles.item} onClick={handleImageClick}>
               {previewUrl ? (
-                <img src={previewUrl} alt="미리보기 이미지" />
+                <div className={styles.imageWrapper}>
+                  <img src={previewUrl} alt="미리보기 이미지" />
+                  <button
+                    className={styles.deleteButton}
+                    onClick={handleDeleteImage}
+                  >
+                    X
+                  </button>
+                </div>
               ) : (
                 <div className={styles.placeholder}>이미지를 첨부하세요</div>
               )}
@@ -182,47 +306,92 @@ const MyPage: React.FC = () => {
             {isEditing ? (
               <div>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={userInfo.email}
                   onChange={handleInputChange}
+                  className={`${styles.div11} ${emailValid === false ? styles.inputError : ''}`}
+                  placeholder="이메일"
                 />
+                {emailValid === false && (
+                  <div className={styles.error}>이메일이 중복됩니다.</div>
+                )}
+
                 <input
                   type="text"
                   name="name"
                   value={userInfo.name}
                   onChange={handleInputChange}
+                  className={styles.div11}
+                  placeholder="이름"
                 />
+
                 <input
                   type="text"
                   name="nickname"
                   value={userInfo.nickname}
                   onChange={handleInputChange}
+                  className={styles.div11}
+                  placeholder="닉네임"
                 />
+                {nicknameValid === false && (
+                  <div className={styles.error}>닉네임이 중복됩니다.</div>
+                )}
+
                 <input
                   type="date"
                   name="birthday"
                   value={userInfo.birthday}
                   onChange={handleInputChange}
+                  className={styles.div11}
+                  placeholder="생년월일"
                 />
-                <input
-                  type="text"
+
+                <select
                   name="sidoName"
                   value={userInfo.sidoName}
                   onChange={handleInputChange}
-                />
-                <input
-                  type="text"
-                  name="gugunName"
-                  value={userInfo.gugunName}
-                  onChange={handleInputChange}
-                />
-                <input
-                  type="text"
-                  name="dongName"
-                  value={userInfo.dongName}
-                  onChange={handleInputChange}
-                />
+                  className={styles.div11}
+                >
+                  <option value="">시/도 선택</option>
+                  {sidoNames.map((sido) => (
+                    <option key={sido} value={sido}>
+                      {sido}
+                    </option>
+                  ))}
+                </select>
+
+                {userInfo.sidoName && (
+                  <select
+                    name="gugunName"
+                    value={userInfo.gugunName}
+                    onChange={handleInputChange}
+                    className={styles.div11}
+                  >
+                    <option value="">구/군 선택</option>
+                    {gugunNames.map((gugun) => (
+                      <option key={gugun} value={gugun}>
+                        {gugun}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {userInfo.gugunName && (
+                  <select
+                    name="dongName"
+                    value={userInfo.dongName}
+                    onChange={handleInputChange}
+                    className={styles.div11}
+                  >
+                    <option value="">동 선택</option>
+                    {dongNames.map((dong) => (
+                      <option key={dong} value={dong}>
+                        {dong}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             ) : (
               <div>
@@ -273,134 +442,57 @@ const MyPage: React.FC = () => {
           <div className={styles.inner} />
           <div className={styles.div4}>마이페이지</div>
         </div>
+
+        {/* 결과 및 차트 */}
         <div className={styles.rectangleDiv}>
           <div className={styles.resultContainer}>
             <div className={styles.div10}>검사 결과</div>
-            <div className={styles.div8}>{userInfo.checkupDate}의 점수</div>
+            <div className={styles.div8}>
+              {selectedResult ? selectedResult.date : userInfo.checkupDate}의
+              점수
+            </div>
             <div className={styles.div11}>
-              <span className={styles.span}>{userInfo.checkupScore}</span>
+              <span className={styles.span}>
+                {selectedResult ? selectedResult.score : userInfo.checkupScore}
+              </span>
               <span className={styles.span1}>점</span>
             </div>
             <div className={styles.div12}>
               검사 소견
               <br />
-              {scoreDescription}
+              {getScoreMessage(
+                selectedResult ? selectedResult.score : userInfo.checkupScore
+              )}
             </div>
           </div>
         </div>
 
         <div className={styles.div9}>내 주변 병원 찾기</div>
         <div className={styles.child1} />
-        <script
-          type="text/javascript"
-          src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_APP_KAKAOMAP_KEY}&libraries=services"
-        ></script>
         <div className={styles.div66}>
           <b>{userInfo.sidoName} </b>
           <b>{userInfo.gugunName}</b>
-          <div className={styles.inner} />
-          <span className={styles.span4}>
-            <span>에 있는</span>
-            <span className={styles.span5}>{` `}</span>
-          </span>
-          <b>정신건강의학과</b>
+          <span>에 있는 정신건강의학과</span>
         </div>
         <div className={styles.mapWrapper}>
           <HospitalMap lat={location.lat} lng={location.lng} />
         </div>
-        <div className={styles.groupParent}>
-          <div className={styles.chartParent}>
-            <div className={styles.chart}>
-              <img className={styles.groupIcon} alt="" src="Group.svg" />
-              <div className={styles.group1}>
-                <img className={styles.vectorIcon1} alt="" src="Vector.svg" />
-                <div className={styles.group2}>
-                  <div className={styles.group3}>
-                    <img
-                      className={styles.vectorIcon2}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                    <div className={styles.div49}>0</div>
-                  </div>
-                  <div className={styles.group4}>
-                    <img
-                      className={styles.vectorIcon3}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                    <div className={styles.div50}>15</div>
-                  </div>
-                  <div className={styles.group5}>
-                    <img
-                      className={styles.vectorIcon4}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                    <div className={styles.div51}>30</div>
-                  </div>
-                  <div className={styles.group6}>
-                    <img
-                      className={styles.vectorIcon5}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                    <div className={styles.div52}>45</div>
-                  </div>
-                  <div className={styles.group7}>
-                    <img
-                      className={styles.vectorIcon6}
-                      alt=""
-                      src="Vector.svg"
-                    />
-                    <div className={styles.div52}>60</div>
-                  </div>
-                </div>
-              </div>
-              <img className={styles.groupIcon1} alt="" src="Group.svg" />
-              <img className={styles.groupIcon2} alt="" src="Group.svg" />
-              <div className={styles.group8}>
-                <img className={styles.vectorIcon7} alt="" src="Vector.svg" />
-                <div className={styles.div54}>10</div>
-              </div>
-            </div>
-          </div>
-          <div className={styles.group9}>
-            <img className={styles.vectorIcon8} alt="" src="Vector.svg" />
-            <div className={styles.div57}>1</div>
-          </div>
-          <div className={styles.group10}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>2</div>
-          </div>
-          <div className={styles.group11}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>3</div>
-          </div>
-          <div className={styles.group12}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>4</div>
-          </div>
-          <div className={styles.group13}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>5</div>
-          </div>
-          <div className={styles.group14}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>6</div>
-          </div>
-          <div className={styles.group15}>
-            <img className={styles.vectorIcon14} alt="" src="Vector.svg" />
-            <div className={styles.div57}>7</div>
-          </div>
-          <div className={styles.group16}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>8</div>
-          </div>
-          <div className={styles.group17}>
-            <img className={styles.vectorIcon9} alt="" src="Vector.svg" />
-            <div className={styles.div57}>9</div>
-          </div>
+
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              onClick={handleChartClick} // 차트 클릭 이벤트 추가
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis domain={[0, 60]} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="score" stroke="#8884d8" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </>

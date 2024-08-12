@@ -7,10 +7,10 @@ import {
   fetchGugunNames,
   fetchDongNames,
 } from '@/api/userAPI'
-import useAuthStore from '@/store/useAuthStore' // 경로 수정
+import useAuthStore from '@/store/useAuthStore'
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
-import styles from 'styles/account/SignUpPage.module.css' // 스타일 경로
+import styles from 'styles/account/SignUpPage.module.css'
 import HeaderBeforeLogin from '@/stories/organisms/common/HeaderBeforeLogin'
 
 const SignUpPage: React.FC = () => {
