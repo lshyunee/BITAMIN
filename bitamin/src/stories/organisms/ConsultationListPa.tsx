@@ -89,6 +89,7 @@ const ConsultationListPa: React.FC = () => {
     } catch (error) {
       console.error('Failed to join the room:', error)
       setError('Failed to join the room')
+      navigate('/consultationlist')
     }
   }
 

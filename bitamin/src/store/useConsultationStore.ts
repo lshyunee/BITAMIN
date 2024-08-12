@@ -55,6 +55,7 @@ interface JoinConsultationState {
   joinconsultation: JoinConsultation | null
   joinRoom: (joinData: JoinData) => Promise<void>
   resetConsultation: () => void
+  setJoinConsultation: (consultation: JoinConsultation | null) => void // 추가된 부분
 }
 
 export const joinConsultation = create<JoinConsultationState>()(
@@ -80,6 +81,10 @@ export const joinConsultation = create<JoinConsultationState>()(
 
       resetConsultation: () => {
         set({ joinconsultation: null })
+      },
+
+      setJoinConsultation: (consultation: JoinConsultation | null) => {
+        set({ joinconsultation: consultation }) // 추가된 부분
       },
     }),
     {

@@ -36,7 +36,7 @@ const CreateRoomPage: React.FC = () => {
 
     try {
       // 방 생성
-      const createdRoom: Consultation | null = await createRoom(roomData)
+      const createdRoom: Consultation = await createRoom(roomData)
       console.log('Room created:', createdRoom)
 
       if (createdRoom) {
@@ -56,7 +56,8 @@ const CreateRoomPage: React.FC = () => {
         console.log('Room joined:', consultation)
 
         setJoinConsultation(consultation)
-        if (consultation !== null) {
+        navigate('/consult')
+        if (consultation != null) {
           // zustand에 참여한 방 정보 저장
           setJoinConsultation(consultation)
 
