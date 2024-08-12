@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance'
 const BASE_URL = 'https://i11b105.p.ssafy.io/api'
 
 // 미션 불러오기
-export const getMission = async (token: string) => {
+export const getMission = async () => {
     try {
         const response = await axiosInstance.get(`${BASE_URL}/missions`)
         return response.data;
