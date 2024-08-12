@@ -67,8 +67,8 @@ const AppRouter: React.FC = () => {
         <Route path="/participantlist" element={<ParticipantListPage />} />
         <Route path="/reply" element={<ReplyPage />} />
         <Route path="/mission" element={<MissionPage />} />
-        <Route path="/missionform" element={<MissionForm />} />
-        <Route path="/complete" element={<CompleteMission />} />
+        {/* <Route path="/missionform" element={<MissionForm />} />
+        <Route path="/complete" element={<CompleteMission />} /> */}
         <Route path="/completecal" element={<CalendarCompleteMission />} />
         <Route path="/weather" element={<Weather />} />
         <Route path="/plant" element={<MyPlant />} />
