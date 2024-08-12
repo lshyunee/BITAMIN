@@ -84,11 +84,33 @@
   align-items: center;
   flex-shrink: 0;
 }
+/* 공통 입력 필드 스타일 */
+.inputField {
+  font-size: 14px; /* 일반 텍스트와 동일한 크기 */
+  font-family: NanumGothic; /* 동일한 폰트 */
+  color: #555; /* 동일한 텍스트 색상 */
+  padding: 5px; /* 적절한 패딩 */
+  border: 1px solid #ddd; /* 경계선 추가 */
+  border-radius: 4px; /* 부드러운 모서리 */
+  box-sizing: border-box; /* 박스 크기 조절 */
+}
+.categoryContent {
+  font-size: 14px; /* 동일한 글씨 크기 */
+  color: #555; /* 동일한 색상 */
+  /* 다른 스타일들 */
+}
+
+.inputField {
+  font-size: 14px; /* 동일한 글씨 크기 */
+  color: #555; /* 동일한 색상 */
+  /* 다른 스타일들 */
+}
+
 /* 유저 정보 */
 .frameParent {
   position: absolute;
   top: 135px;
-  left: 952px;
+  left: 1202px;
   width: 403px;
   display: flex;
   flex-direction: column;
@@ -102,8 +124,8 @@
 /* 밑줄 */
 .inner {
   position: absolute;
-  top: 115px;
-  left: 952px;
+  top: 113px;
+  left: 1190px;
   border-radius: 2px;
   background-color: rgba(252, 124, 76, 0.72);
   width: 98px;
@@ -112,8 +134,8 @@
 /* 마이페이지 글씨 */
 .div4 {
   position: absolute;
-  top: 104px;
-  left: 952px;
+  top: 100px;
+  left: 1190px;
   font-size: 20px;
   letter-spacing: -0.18px;
   line-height: 16px;
@@ -144,7 +166,7 @@
 .item {
   position: absolute;
   top: 80px;
-  left: 340px;
+  left: 540px;
   box-shadow: 4px 4px 25px rgba(92, 92, 92, 0.25);
   border-radius: 8px;
   background-color: #f1f1f5;
@@ -215,10 +237,10 @@ button {
 /* 검진 결과 */
 .rectangleDiv {
   position: absolute;
-  top: 499px;
+  top: 559px;
   left: 1200px;
   background-color: #f1f1f5;
-  width: 465px;
+  width: 540px;
   height: auto; /* 내용에 따라 자동으로 높이 조절 */
   padding: 20px; /* 내부 여백 추가 */
   border-radius: 8px; /* 모서리 둥글게 */
@@ -297,21 +319,23 @@ button {
   height: auto;
   line-height: 2.1;
 }
+/* 지도 감싸는 박스 */
 .child1 {
   position: absolute;
-  top: 924px;
-  left: calc(50% - 435px);
+  top: 1224px;
+  left: calc(50% - 525px);
   box-shadow: 0px 1px 50px rgba(119, 119, 119, 0.16);
   border-radius: 10px;
   background-color: #fff;
-  width: 869px;
+  width: 1069px;
   height: 1405px;
 }
+/* 지도 */
 .mapWrapper {
   position: absolute;
-  top: 972px;
-  left: calc(50% - 435px);
-  width: 869px;
+  top: 1272px;
+  left: calc(50% - 525px);
+  width: 1069px;
   height: 304px;
   object-fit: cover;
 }
@@ -1246,8 +1270,8 @@ button {
 /* 정신건강의학과 글씨 */
 .div66 {
   position: absolute;
-  top: 935px;
-  left: 500px;
+  top: 1235px;
+  left: 610px;
   font-size: 18px;
   text-align: center;
   color: #333;
@@ -1318,11 +1342,11 @@ button {
   padding: 10px; /* 내부 여백 추가 */
   width: 100%; /* 차트가 전체 너비를 차지하도록 설정 */
   max-width: 800px; /* 최대 너비 설정 */
-  height: 490px; /* 차트 높이 설정 */
+  height: 465px; /* 차트 높이 설정 */
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 500px;
+  top: 560px;
   left: 350px;
 }
 
@@ -1406,7 +1430,7 @@ button {
   stroke-width: 2;
 }
 
-/* 전체 레이아웃과 색상 조정 */
+/* 중간 네모 */
 .div {
   width: 100%;
   position: relative;
