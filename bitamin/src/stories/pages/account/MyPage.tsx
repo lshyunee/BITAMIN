@@ -469,7 +469,6 @@ const MyPage: React.FC = () => {
           </div>
         </div>
 
-        <div className={styles.div9}>내 주변 병원 찾기</div>
         <div className={styles.child1} />
         <div className={styles.div66}>
           <b>{userInfo.sidoName} </b>
