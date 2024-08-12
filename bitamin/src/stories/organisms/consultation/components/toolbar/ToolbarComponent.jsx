@@ -23,10 +23,9 @@ import TextField from '@material-ui/core/TextField'
 
 import IconButton from '@material-ui/core/IconButton'
 import { useChatStore } from '../../../../../store/useChatStore' // GPT 상태 관리 불러오기
+import { withNavigate } from '../withNavigate' // withNavigate HOC 임포트
 
-// const logo = require('../../assets/images/openvidu_logo.png')
-
-export default class ToolbarComponent extends Component {
+class ToolbarComponent extends Component {
   constructor(props) {
     super(props)
     this.state = { fullscreen: false }
@@ -73,7 +72,15 @@ export default class ToolbarComponent extends Component {
   }
 
   leaveSession() {
-    this.props.leaveSession()
+    console.log('Leaving session')
+    const mySession = this.props.session
+
+    if (mySession) {
+      mySession.disconnect()
+    }
+
+    // 페이지 이동
+    this.props.navigate('/consultationlist')
   }
 
   toggleChat() {
@@ -110,8 +117,6 @@ export default class ToolbarComponent extends Component {
       <AppBar className="toolbar" id="header">
         <Toolbar className="toolbar">
           <div id="navSessionInfo">
-            {/* <img id="header_img" alt="OpenVidu Logo" src={logo} /> */}
-
             {this.props.sessionId && (
               <div id="titleContent">
                 <span id="session-title">{mySessionId}</span>
@@ -235,3 +240,5 @@ export default class ToolbarComponent extends Component {
     )
   }
 }
+
+export default withNavigate(ToolbarComponent)

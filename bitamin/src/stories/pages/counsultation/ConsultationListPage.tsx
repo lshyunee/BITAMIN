@@ -30,7 +30,7 @@ const ConsultationListPage: React.FC = () => {
   return (
     <>
       <ConsultationListPa />
-      <CreateRoomPage />
+      {/* <CreateRoomPage /> */}
       <div className={styles.div}>
         <div className={styles.child} />
         <div className={styles.item} />
