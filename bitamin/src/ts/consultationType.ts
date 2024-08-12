@@ -23,7 +23,7 @@ export interface RandomJoin {
 export interface CurrentConsultaion {
   id: number
   isPrivated: number
-  password?: string
+  password?: string | null
   startTime: string
   sessionId: string
 }
@@ -43,24 +43,31 @@ export interface CreateConsultation {
   category: string
   title: string
   isPrivated: number
-  password?: string
+  password?: string | null
   startTime: string
   endTime: string
 }
 
 export interface ConsultationList {
-  consultationList: Consultation[]
+  consultationList: Omit<Consultation, 'password'>[] // 비밀번호 필드 제거
   page: number
   size: number
   totalElements: number
   totalPages: number
 }
 
+export type JoinData = Pick<
+  Consultation,
+  'id' | 'isPrivated' | 'startTime' | 'sessionId'
+> & {
+  password: string
+}
+
 export interface RoomData {
   category: string
   title: string
   isPrivated: number
-  password?: string
+  password?: string | null
   startTime: string
   endTime: string
 }

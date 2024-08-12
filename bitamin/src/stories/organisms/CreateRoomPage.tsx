@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { joinConsultation, useCreateRoom } from 'store/useConsultationStore'
-import {
-  CreateConsultation,
-  Consultation,
-  CurrentConsultaion,
-} from 'ts/consultationType' // 필요한 타입 임포트
+import { CreateConsultation, Consultation, JoinData } from 'ts/consultationType'
 
 const CreateRoomPage: React.FC = () => {
   const [category, setCategory] = useState<string>('미술')
@@ -17,7 +13,6 @@ const CreateRoomPage: React.FC = () => {
 
   const navigate = useNavigate()
 
-  // zustand에서 필요한 상태와 함수를 가져오기
   const { createRoom } = useCreateRoom()
   const { joinRoom, setJoinConsultation } = joinConsultation((state) => ({
     joinRoom: state.joinRoom,
@@ -35,13 +30,11 @@ const CreateRoomPage: React.FC = () => {
     }
 
     try {
-      // 방 생성
-      const createdRoom: Consultation = await createRoom(roomData)
+      const createdRoom = await createRoom(roomData)
       console.log('Room created:', createdRoom)
 
       if (createdRoom) {
-        // 생성된 방에 바로 참여
-        const joinData: CurrentConsultaion = {
+        const joinData: JoinData = {
           id: createdRoom.id,
           isPrivated: createdRoom.isPrivated,
           password: createdRoom.isPrivated ? password : '',
@@ -51,19 +44,15 @@ const CreateRoomPage: React.FC = () => {
 
         console.log('Join data:', joinData)
 
-        // 방에 참여
         const consultation = await joinRoom(joinData)
         console.log('Room joined:', consultation)
 
-        setJoinConsultation(consultation)
-        navigate('/consult')
-        if (consultation != null) {
-          // zustand에 참여한 방 정보 저장
+        if (consultation) {
           setJoinConsultation(consultation)
-
-          // 참여 후 다른 페이지로 이동
           navigate('/consult')
         }
+      } else {
+        console.error('Failed to create the room.')
       }
     } catch (error) {
       console.error('Failed to create or join room:', error)

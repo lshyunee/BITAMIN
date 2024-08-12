@@ -5,7 +5,12 @@ import {
   joinConsultation,
   useJoinRandomRoom,
 } from 'store/useConsultationStore'
-import { RoomSearch, Consultation, ConsultationList } from 'ts/consultationType' // 인터페이스 가져오기
+import {
+  RoomSearch,
+  Consultation,
+  ConsultationList,
+  JoinConsultation,
+} from 'ts/consultationType' // 인터페이스 가져오기
 
 const ConsultationListPa: React.FC = () => {
   const navigate = useNavigate()
@@ -13,7 +18,8 @@ const ConsultationListPa: React.FC = () => {
   // zustand 스토어에서 상태 및 액션 가져오기
   const { ConsultationList, fetchConsultations } = fetchConsultationList(
     (state) => ({
-      ConsultationList: state.ConsultationList || [], // 타입 적용
+      // ConsultationList의 기본값을 빈 객체로 설정하여 안전하게 접근할 수 있도록 합니다.
+      ConsultationList: state.ConsultationList || { consultationList: [] },
       fetchConsultations: state.fetchConsultations,
     })
   )
@@ -78,12 +84,12 @@ const ConsultationListPa: React.FC = () => {
       }
 
       // joinRoom이 성공적으로 완료되기를 기다립니다.
-      const consult: Consultation = await joinRoom(joinData)
+      const consult: JoinConsultation = await joinRoom(joinData)
 
       // joinRoom이 완료된 후 콘솔에 로그를 출력합니다.
       console.log('Join Room Result:', consult)
       console.log('Room joined:', joinData)
-      setJoinConsultation(consultation)
+      setJoinConsultation(consult)
       // 페이지를 이동시킵니다.
       navigate('/consult')
     } catch (error) {
@@ -126,49 +132,53 @@ const ConsultationListPa: React.FC = () => {
       </div>
 
       <ul>
-        {ConsultationList.map((consultation) => (
-          <li key={consultation.id}>
-            <p>
-              <strong>Category:</strong> {consultation.category}
-            </p>
-            <p>
-              <strong>Title:</strong> {consultation.title}
-            </p>
-            <p>
-              <strong>Start Time:</strong> {consultation.startTime}
-            </p>
-            <p>
-              <strong>End Time:</strong> {consultation.endTime}
-            </p>
-            <p>
-              <strong>Current Participants:</strong>{' '}
-              {consultation.currentParticipants}
-            </p>
-            <p>
-              <strong>Session ID:</strong> {consultation.sessionId}
-            </p>
-            {consultation.isPrivated ? (
-              <div>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  value={passwords[consultation.id] || ''}
-                  onChange={(e) =>
-                    handlePasswordChange(consultation.id, e.target.value)
-                  }
-                />
-                <button onClick={() => handleJoinRoom(consultation)}>
-                  Join Room
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => handleJoinRoom(consultation)}>
-                Join Room
-              </button>
-            )}
-            <br />
-          </li>
-        ))}
+        {/* consultationList가 존재할 때만 map 함수를 사용 */}
+        {ConsultationList.consultationList &&
+          ConsultationList.consultationList.map(
+            (consultation: Consultation) => (
+              <li key={consultation.id}>
+                <p>
+                  <strong>Category:</strong> {consultation.category}
+                </p>
+                <p>
+                  <strong>Title:</strong> {consultation.title}
+                </p>
+                <p>
+                  <strong>Start Time:</strong> {consultation.startTime}
+                </p>
+                <p>
+                  <strong>End Time:</strong> {consultation.endTime}
+                </p>
+                <p>
+                  <strong>Current Participants:</strong>{' '}
+                  {consultation.currentParticipants}
+                </p>
+                <p>
+                  <strong>Session ID:</strong> {consultation.sessionId}
+                </p>
+                {consultation.isPrivated ? (
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Enter password"
+                      value={passwords[consultation.id] || ''}
+                      onChange={(e) =>
+                        handlePasswordChange(consultation.id, e.target.value)
+                      }
+                    />
+                    <button onClick={() => handleJoinRoom(consultation)}>
+                      Join Room
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => handleJoinRoom(consultation)}>
+                    Join Room
+                  </button>
+                )}
+                <br />
+              </li>
+            )
+          )}
       </ul>
       <div>
         <h2>Fetch Random Participants</h2>
