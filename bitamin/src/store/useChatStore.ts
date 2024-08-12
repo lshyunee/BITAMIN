@@ -5,18 +5,21 @@ import { ChatLog, Message } from 'ts/consultationType'
 
 interface ChatState {
   chatLog: ChatLog
+  sttTexts: { [user: string]: string[] } // STT 텍스트를 저장할 상태 추가
   sendMessage: (
     user: string,
     content: string,
     category: string
   ) => Promise<void>
   resetChatLog: () => void
+  saveSttText: (user: string, text: string) => void // STT 텍스트 저장 메서드 추가
 }
 
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
       chatLog: {},
+      sttTexts: {}, // 초기 STT 텍스트 상태
 
       sendMessage: async (user: string, content: string, category: string) => {
         try {
@@ -70,6 +73,18 @@ export const useChatStore = create<ChatState>()(
 
       resetChatLog: () => {
         set({ chatLog: {} })
+      },
+
+      saveSttText: (user: string, text: string) => {
+        set((state) => ({
+          sttTexts: {
+            ...state.sttTexts,
+            [user]: [...(state.sttTexts[user] || []), text],
+          },
+        }))
+
+        // 텍스트가 저장될 때마다 콘솔에 출력
+        console.log(`STT Text saved for ${user}: ${text}`)
       },
     }),
     {

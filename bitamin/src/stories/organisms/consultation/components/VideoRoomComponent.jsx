@@ -11,6 +11,7 @@ import ToolbarComponent from './toolbar/ToolbarComponent'
 import useUserStore from '../../../../store/useUserStore'
 import { joinConsultation } from '../../../../store/useConsultationStore'
 import ConfirmLeaveModal from './ConfirmLeaveModal' // 모달 컴포넌트
+import { useChatStore } from '../../../../store/useChatStore' // ChatStore 추가
 
 var localUser = new UserModel()
 
@@ -293,6 +294,11 @@ class VideoRoomComponent extends Component {
     localUser.getStreamManager().publishAudio(localUser.isAudioActive())
     this.sendSignalUserChanged({ isAudioActive: localUser.isAudioActive() })
     this.setState({ localUser: localUser })
+
+    // STT를 통해 음성 인식 시작
+    if (localUser.isAudioActive()) {
+      this.startStt()
+    }
   }
 
   nicknameChanged(nickname) {
@@ -402,6 +408,27 @@ class VideoRoomComponent extends Component {
       type: 'userChanged',
     }
     this.state.session.signal(signalOptions)
+  }
+
+  startStt() {
+    // STT 초기화 및 시작
+    const recognition = new window.webkitSpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      console.log('STT result:', transcript)
+      // STT 결과를 store에 저장
+      useChatStore.getState().saveSttText(transcript)
+    }
+
+    recognition.onerror = (event) => {
+      console.error('STT error:', event.error)
+    }
+
+    recognition.start()
   }
 
   toggleFullscreen() {
@@ -675,6 +702,21 @@ class VideoRoomComponent extends Component {
               </ul>
             </div>
           </div>
+
+          {/* GPT 버튼 주석 처리됨 */}
+          {/*
+          <button
+            onClick={() =>
+              useChatStore.getState().sendMessage(
+                this.state.myUserName,
+                useChatStore.getState().sttText,
+                'general' // 카테고리 설정
+              )
+            }
+          >
+            Send to GPT
+          </button>
+          */}
         </div>
       </>
     )

@@ -8,12 +8,14 @@ interface CreateRoomPageProps {
 }
 
 const CreateRoomPage: React.FC<CreateRoomPageProps> = ({ onClose }) => {
-  const [category, setCategory] = useState<string>('미술')
+  const [category, setCategory] = useState<string>('')
   const [title, setTitle] = useState<string>('')
   const [isPrivated, setIsPrivated] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
   const [startTime, setStartTime] = useState<string>('')
   const [endTime, setEndTime] = useState<string>('')
+
+  const navigate = useNavigate()
 
   const { createRoom } = useCreateRoom()
   const { joinRoom, setJoinConsultation } = joinConsultation((state) => ({
@@ -46,6 +48,11 @@ const CreateRoomPage: React.FC<CreateRoomPageProps> = ({ onClose }) => {
   }
 
   const handleSubmit = async () => {
+    if (!category) {
+      alert('상담 카테고리를 선택해주세요.') // 카테고리가 설정되지 않으면 경고를 표시
+      return
+    }
+
     const roomData: CreateConsultation = {
       category,
       title,
@@ -75,7 +82,7 @@ const CreateRoomPage: React.FC<CreateRoomPageProps> = ({ onClose }) => {
 
         if (consultation) {
           setJoinConsultation(consultation)
-          onClose() // 방 생성 후 모달을 닫습니다.
+          navigate('/consult') // 방 생성 후 /consult로 이동
         }
       } else {
         console.error('Failed to create the room.')
