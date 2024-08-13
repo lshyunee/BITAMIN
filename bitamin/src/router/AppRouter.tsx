@@ -6,6 +6,7 @@ import SurveyPage from 'stories/pages/account/SurveyPage'
 import MissionPage from 'stories/pages/mission/MissionPage'
 import ConsultationListPage from 'stories/pages/counsultation/ConsultationListPage'
 import ConsultationPage from 'stories/pages/counsultation/ConsultationPage'
+import VideoRoomComponent from 'stories/organisms/consultation/components/VideoRoomComponent'
 // import CounsultPage from 'stories/pages/counsultation/CounsultPage'
 // import Counsult from 'stories/pages/counsultation/Counsult.js'
 import ConsultationSharingPage from 'stories/pages/counsultation/ConsultationSharingPage'
@@ -32,8 +33,9 @@ const AppRouter: React.FC = () => {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/survey" element={<SurveyPage />} />
       <Route path="/mypage" element={<MyPage />} />
-      <Route path="/counsultationlist" element={<ConsultationListPage />} />
-      <Route path="/counsultation" element={<ConsultationPage />} />
+      <Route path="/consultationlist" element={<ConsultationListPage />} />
+      <Route path="/consult" element={<VideoRoomComponent />} />
+      {/* <Route path="/consultation" element={<ConsultationPage />} /> */}
       <Route path="/auth" element={<AuthPage />} />
       {/* <Route path="/counsult" element={<Counsult />} /> */}
       <Route
