@@ -18,17 +18,28 @@ const MessageListPage: React.FC = () => {
 
   useEffect(() => {
     const loadMessages = async () => {
-      const data = await fetchMessages()
-      setMessages(data)
+      try {
+        const data = await fetchMessages()
+        setMessages(data)
+      } catch (error) {
+        console.error('Failed to fetch messages:', error)
+      }
     }
 
     loadMessages()
   }, [])
 
   const handleDelete = async (id: number) => {
-    await deleteMessage(id)
-    setMessages(messages.filter((message) => message.id !== id))
-    setModalOpen(true)
+    try {
+      await deleteMessage(id)
+      setMessages((prevMessages) =>
+        prevMessages.filter((message) => message.id !== id)
+      )
+      setMessages(messages.filter((message) => message.id !== id))
+      setModalOpen(true)
+    } catch (error) {
+      console.error('Failed to delete message:', error)
+    }
   }
 
   const handleMouseEnter = (id: number) => {
@@ -44,7 +55,7 @@ const MessageListPage: React.FC = () => {
   }
 
   return (
-    <>
+    <div className="mx-auto" style={{ marginLeft: '20%', marginRight: '20%' }}>
       <ul className="space-y-2">
         {messages.map((message) => (
           <li
@@ -62,35 +73,39 @@ const MessageListPage: React.FC = () => {
               <img src="path/to/icon.png" alt="icon" className="w-6 h-6" />
               <span
                 className={`font-semibold ${
-                  hoveredMessageId === message.id ? 'text-white' : 'text-red-500'
+                  hoveredMessageId === message.id
+                    ? 'text-white'
+                    : 'text-red-500'
                 }`}
               >
                 {message.nickname}
               </span>
               <span
-                className={
+                className={`${
                   hoveredMessageId === message.id
                     ? 'text-white'
                     : 'text-gray-800'
-                }
+                }`}
               >
                 {message.title}
               </span>
             </div>
             <div className="text-gray-500">{message.sendDate}</div>
-            <button
-              className="ml-4 px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleDelete(message.id)
-              }}
-            >
-              삭제
-            </button>
+            {hoveredMessageId === message.id && (
+              <button
+                className="ml-4 px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleDelete(message.id)
+                }}
+              >
+                삭제
+              </button>
+            )}
           </li>
         ))}
       </ul>
-      {isModalOpen && (
+            {isModalOpen && (
         <Modal
           title="쪽지가 삭제되었습니다."
           content="쪽지가 성공적으로 삭제되었습니다."
@@ -103,7 +118,7 @@ const MessageListPage: React.FC = () => {
           imgSize={100}
         />
       )}
-    </>
+    </div>
   )
 }
 
