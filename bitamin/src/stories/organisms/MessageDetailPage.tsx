@@ -6,6 +6,8 @@ import {
   createReply,
 } from 'api/messageAPI'
 import { useParams, useNavigate } from 'react-router-dom'
+import Modal from '@/stories/organisms/Modal'
+
 
 const MessageDetailPage = () => {
   const { messageId } = useParams()
@@ -15,6 +17,12 @@ const MessageDetailPage = () => {
   const [error, setError] = useState(null)
   const [replyContent, setReplyContent] = useState('')
   const [showReplyInput, setShowReplyInput] = useState(false)
+  const [isModalOpen, setModalOpen] = useState<boolean>(false)
+
+  const closeModal = () => {
+    setModalOpen(false)
+    navigate('/messagelist')
+  }
 
   useEffect(() => {
     const loadMessageDetail = async () => {
@@ -35,8 +43,7 @@ const MessageDetailPage = () => {
     if (window.confirm('Are you sure you want to delete this message?')) {
       try {
         await deleteMessage(Number(messageId))
-        alert('Message deleted successfully')
-        navigate('/messagelist')
+        setModalOpen(true)
       } catch (err) {
         alert('Failed to delete message')
         console.error('Error deleting message:', err)
@@ -178,6 +185,19 @@ const MessageDetailPage = () => {
             </div>
           )}
         </div>
+      )}
+            {isModalOpen && (
+        <Modal
+          title="쪽지가 삭제되었습니다."
+          content="쪽지가 성공적으로 삭제되었습니다."
+          iconSrc="src.alert"
+          onClose={closeModal}
+          headerBackgroundColor="#FF1B1B"
+          buttonBorderColor="#FF1B1B"
+          buttonTextColor="#FF1B1B"
+          imgColor="#333"
+          imgSize={100}
+        />
       )}
     </div>
   )
