@@ -8,6 +8,7 @@ import SignUpPage from 'stories/pages/account/SignUpPage'
 import SurveyPage from 'stories/pages/account/SurveyPage'
 import ConsultationListPage from 'stories/pages/counsultation/ConsultationListPage'
 import ConsultationPage from 'stories/pages/counsultation/ConsultationPage'
+import VideoRoomComponent from 'stories/organisms/consultation/components/VideoRoomComponent'
 // import CounsultPage from 'stories/pages/counsultation/CounsultPage'
 // import Counsult from 'stories/pages/counsultation/Counsult.js'
 import ConsultationSharingPage from 'stories/pages/counsultation/ConsultationSharingPage'
@@ -55,7 +56,7 @@ const AppRouter: React.FC = () => {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/change-password" element={<PasswordChangePage />} />
         <Route path="/consultationlist" element={<ConsultationListPage />} />
-        <Route path="/consultation" element={<ConsultationPage />} />
+        <Route path="/consult" element={<ConsultationPage />} />
         <Route
           path="/counsultationsharing"
           element={<ConsultationSharingPage />}
