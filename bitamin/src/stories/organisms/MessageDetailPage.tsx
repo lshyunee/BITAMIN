@@ -7,8 +7,7 @@ import {
 } from 'api/messageAPI'
 import { useParams, useNavigate } from 'react-router-dom'
 import Modal from '@/stories/organisms/Modal'
-import CheckModal from '@/stories/organisms/CheckModal';
-
+import CheckModal from '@/stories/organisms/CheckModal'
 
 const MessageDetailPage = () => {
   const { messageId } = useParams()
@@ -20,14 +19,15 @@ const MessageDetailPage = () => {
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
   const [isMessageModalOpen, setMessageModalOpen] = useState<boolean>(false)
-  const [isMessageSendModalOpen, setMessageSendModalOpen] = useState<boolean>(false)
+  const [isMessageSendModalOpen, setMessageSendModalOpen] =
+    useState<boolean>(false)
 
-  const [isCheckReplyModalOpen, setCheckReplyModalOpen] = useState(false);
-  const [isCheckModalOpen, setCheckModalOpen] = useState(false);
-  const [replyModalId,setReplyModalId] = useState(0);
+  const [isCheckReplyModalOpen, setCheckReplyModalOpen] = useState(false)
+  const [isCheckModalOpen, setCheckModalOpen] = useState(false)
+  const [replyModalId, setReplyModalId] = useState(0)
 
   const closeCheckModal = () => {
-    setCheckModalOpen(false);
+    setCheckModalOpen(false)
   }
 
   const handleConfirm = async () => {
@@ -38,29 +38,29 @@ const MessageDetailPage = () => {
     } catch (err) {
       alert('Failed to delete message')
       console.error('Error deleting message:', err)
-    } finally{
-      closeCheckModal();
+    } finally {
+      closeCheckModal()
     }
-  };
+  }
 
   const handleSecondaryAction = () => {
-    closeCheckModal();
-  };
+    closeCheckModal()
+  }
 
   // 답장 삭제용 모달 함수
 
   const closeReplyCheckModal = () => {
-    setCheckReplyModalOpen(false);
+    setCheckReplyModalOpen(false)
   }
 
   const handleReplyConfirm = async () => {
     deleteToReply(replyModalId)
     closeReplyCheckModal()
-  };
+  }
 
   const handleReplySecondaryAction = () => {
-    closeReplyCheckModal();
-  };
+    closeReplyCheckModal()
+  }
 
   const closeModal = () => {
     setModalOpen(false)
@@ -91,7 +91,7 @@ const MessageDetailPage = () => {
   }, [messageId])
 
   const handleDeleteMessage = async () => {
-    setCheckModalOpen(true);
+    setCheckModalOpen(true)
   }
 
   const handleDeleteReply = async (replyId) => {
@@ -234,22 +234,22 @@ const MessageDetailPage = () => {
             </div>
           )}
 
-{isMessageModalOpen && (
-        <Modal
-          title="댓글이 삭제 되었습니다."
-          content="댓글이 성공적으로 삭제되었습니다."
-          iconSrc="src.alert"
-          onClose={closeMessageModal}
-          headerBackgroundColor="#FF1B1B"
-          buttonBorderColor="#FF1B1B"
-          buttonTextColor="#FF1B1B"
-          imgColor="#333"
-          imgSize={100}
-        />
-      )}
+          {isMessageModalOpen && (
+            <Modal
+              title="댓글이 삭제 되었습니다."
+              content="댓글이 성공적으로 삭제되었습니다."
+              iconSrc="src.alert"
+              onClose={closeMessageModal}
+              headerBackgroundColor="#FF1B1B"
+              buttonBorderColor="#FF1B1B"
+              buttonTextColor="#FF1B1B"
+              imgColor="#333"
+              imgSize={100}
+            />
+          )}
         </div>
       )}
-            {isModalOpen && (
+      {isModalOpen && (
         <Modal
           title="쪽지가 삭제되었습니다."
           content="쪽지가 성공적으로 삭제되었습니다."
@@ -262,7 +262,7 @@ const MessageDetailPage = () => {
           imgSize={100}
         />
       )}
-            {isMessageSendModalOpen && (
+      {isMessageSendModalOpen && (
         <Modal
           title="답장이 전송되었습니다."
           content="답장이 성공적으로 전송되었습니다."
@@ -278,7 +278,7 @@ const MessageDetailPage = () => {
         <CheckModal
           title="쪽지 삭제"
           content="정말 삭제하시겠습니까?"
-          iconSrc="src.alert" 
+          iconSrc="src.alert"
           confirmText="확인"
           onConfirm={handleConfirm}
           onClose={closeCheckModal}
@@ -291,11 +291,11 @@ const MessageDetailPage = () => {
           onSecondaryAction={handleSecondaryAction}
         />
       )}
-            {isCheckReplyModalOpen && (
+      {isCheckReplyModalOpen && (
         <CheckModal
           title="답장 삭제"
           content="정말 삭제하시겠습니까?"
-          iconSrc="src.alert" 
+          iconSrc="src.alert"
           confirmText="확인"
           onConfirm={handleReplyConfirm}
           onClose={closeReplyCheckModal}
