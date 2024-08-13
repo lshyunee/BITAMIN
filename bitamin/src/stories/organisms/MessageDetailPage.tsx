@@ -18,10 +18,15 @@ const MessageDetailPage = () => {
   const [replyContent, setReplyContent] = useState('')
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
+  const [isMessageModalOpen, setMessageModalOpen] = useState<boolean>(false)
 
   const closeModal = () => {
     setModalOpen(false)
     navigate('/messagelist')
+  }
+
+  const closeMessageModal = () => {
+    setMessageModalOpen(false)
   }
 
   useEffect(() => {
@@ -66,7 +71,7 @@ const MessageDetailPage = () => {
           }
           return prevMessage
         })
-        alert('Reply deleted successfully')
+        setMessageModalOpen(true)
       } catch (err) {
         alert('Failed to delete reply')
         console.error('Error deleting reply:', err)
@@ -184,6 +189,20 @@ const MessageDetailPage = () => {
               </button>
             </div>
           )}
+
+{isMessageModalOpen && (
+        <Modal
+          title="댓글이 삭제 되었습니다."
+          content="댓글이 성공적으로 삭제되었습니다."
+          iconSrc="src.alert"
+          onClose={closeMessageModal}
+          headerBackgroundColor="#FF1B1B"
+          buttonBorderColor="#FF1B1B"
+          buttonTextColor="#FF1B1B"
+          imgColor="#333"
+          imgSize={100}
+        />
+      )}
         </div>
       )}
             {isModalOpen && (
