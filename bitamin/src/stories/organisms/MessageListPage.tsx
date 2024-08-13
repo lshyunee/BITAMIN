@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { fetchMessages, deleteMessage } from 'api/messageAPI'
 import { useNavigate } from 'react-router-dom'
 import Modal from '@/stories/organisms/Modal'
-import CheckModal from '@/stories/organisms/CheckModal';
+import CheckModal from '@/stories/organisms/CheckModal'
 
 interface Message {
   id: number
@@ -16,11 +16,11 @@ const MessageListPage: React.FC = () => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number | null>(null)
   const navigate = useNavigate()
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
-  const [isCheckModalOpen, setCheckModalOpen] = useState(false);
-  const [toDeleteMessage,setToDeleteMessage] = useState<number>(0);
+  const [isCheckModalOpen, setCheckModalOpen] = useState(false)
+  const [toDeleteMessage, setToDeleteMessage] = useState<number>(0)
 
   const closeCheckModal = () => {
-    setCheckModalOpen(false);
+    setCheckModalOpen(false)
   }
 
   const handleConfirm = async () => {
@@ -34,15 +34,14 @@ const MessageListPage: React.FC = () => {
       setModalOpen(true)
     } catch (error) {
       console.error('Failed to delete message:', error)
-    }
-    finally{
+    } finally {
       closeCheckModal()
     }
-  };
+  }
 
   const handleSecondaryAction = () => {
-    closeCheckModal();
-  };
+    closeCheckModal()
+  }
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -125,7 +124,7 @@ const MessageListPage: React.FC = () => {
           </li>
         ))}
       </ul>
-            {isModalOpen && (
+      {isModalOpen && (
         <Modal
           title="쪽지가 삭제되었습니다."
           content="쪽지가 성공적으로 삭제되었습니다."
@@ -142,7 +141,7 @@ const MessageListPage: React.FC = () => {
         <CheckModal
           title="쪽지 삭제"
           content="정말 삭제하시겠습니까?"
-          iconSrc="src.alert" 
+          iconSrc="src.alert"
           confirmText="확인"
           onConfirm={handleConfirm}
           onClose={closeCheckModal}

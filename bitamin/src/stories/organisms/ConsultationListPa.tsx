@@ -173,11 +173,17 @@ const ConsultationListPa: React.FC = () => {
               className="flex items-center justify-between p-4 bg-pink-50 rounded-lg shadow-md"
             >
               <div className="flex items-center space-x-4">
-                {consultation.isPrivated && (
-                  <span className="text-red-500">
-                    <i className="fas fa-lock"></i> {/* 비밀방 아이콘 자리 */}
-                  </span>
-                )}
+                <img
+                  src={
+                    consultation.isPrivated
+                      ? '../public/BItAMin.png'
+                      : '../public/BItAMin.png'
+                  }
+                  alt={
+                    consultation.isPrivated ? '비밀방 아이콘' : '일반방 아이콘'
+                  }
+                  className="w-6 h-6" // 이미지 크기를 조정하는 클래스
+                />
                 <span className="py-1 px-2 bg-pink-200 text-gray-700 rounded-full">
                   {consultation.category}
                 </span>
