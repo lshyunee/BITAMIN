@@ -55,25 +55,8 @@ const LoginPage: React.FC = () => {
         email,
         password,
       })
-
-      const { accessToken, refreshToken } = response.data
-      console.log('Server response:', response.data) // 서버 응답 확인
-      console.log('Access Token:', accessToken) // 토큰 확인
-      console.log('Refresh Token:', refreshToken)
-
-      setAccessToken(accessToken)
-      setAuthAccessToken(accessToken)
-      setAuthRefreshToken(refreshToken)
-
-      setCookie('refreshToken', refreshToken, {
-        path: '/',
-        secure: true,
-        sameSite: 'strict',
-      })
-
-      sessionStorage.setItem('isAuthenticated', 'true')
-      alert('Login successful!')
-      navigate('/home')
+      setResponseData(response)
+      setModalOpen(true)
     } catch (error: any) {
       console.error('Login error:', error.response || error.message)
       const errorMessage =
