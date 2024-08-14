@@ -9,21 +9,41 @@ import darkCloudImg from '@/assets/weatherImage/dark_cloud.png';
 import rainyImg from '@/assets/weatherImage/rainy.png';
 import snowImg from '@/assets/weatherImage/snow.png';
 
+import sunnyBg from '@/assets/weatherImage/sunnybg.png';
+import cloudyBg from '@/assets/weatherImage/cloudybg.png';
+import rainyBg from '@/assets/weatherImage/rainbg.png';
+import snowyBg from '@/assets/weatherImage/snowbg.png';
+import blueCloudBg from '@/assets/weatherImage/bluecloudy.png';
+
 const MyPlant: React.FC = () => {
     const [experience, setExperience] = useState<number | null>(null);
+    const [level, setLevel] = useState<number | null>(null);
     const [weatherSky, setWeatherSky] = useState<string | null>(null);
     const [weatherPty, setWeatherPty] = useState<string | null>(null);
     const [weatherImage, setWeatherImage] = useState<string | undefined>(undefined);
+    const [backgroundImage, setBackgroundImage] = useState<string | undefined>(undefined);
     const [tmp, setTmp] = useState<number | null>(null);
     const [pop, setPop] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        const calculateLevel = (experience: number) => {
+            if (experience >= 0 && experience <= 450) return 0;
+            if (experience >= 500 && experience <= 950) return 1;
+            if (experience >= 1000 && experience <= 1450) return 2;
+            if (experience >= 1500 && experience <= 1950) return 3;
+            if (experience >= 2000 && experience <= 2450) return 4;
+            if (experience >= 2500) return 5;
+            return null; // 유효하지 않은 경험치일 경우
+        };
+
         const fetchExperience = async () => {
             try {
                 const response = await getExperience();
                 if (response && response.data) {
-                    setExperience(response.data.experience);
+                    const exp = response.data.experience;
+                    setExperience(exp);
+                    setLevel(calculateLevel(exp));
                 } else {
                     console.error('Invalid response structure:', response);
                 }
@@ -84,14 +104,17 @@ const MyPlant: React.FC = () => {
                                     case '1':
                                         setWeatherSky('맑음');
                                         setWeatherImage(sunnyImg);
+                                        setBackgroundImage(sunnyBg);
                                         break;
                                     case '3':
                                         setWeatherSky('구름많음');
                                         setWeatherImage(blueCloudImg);
+                                        setBackgroundImage(blueCloudBg);
                                         break;
                                     case '4':
                                         setWeatherSky('흐림');
                                         setWeatherImage(darkCloudImg);
+                                        setBackgroundImage(cloudyBg);
                                         break;
                                 }
                                 break;
@@ -103,18 +126,22 @@ const MyPlant: React.FC = () => {
                                     case '1':
                                         setWeatherPty('비');
                                         setWeatherImage(rainyImg);
+                                        setBackgroundImage(rainyBg);
                                         break;
                                     case '2':
                                         setWeatherPty('비/눈');
                                         setWeatherImage(rainyImg);
+                                        setBackgroundImage(rainyBg);
                                         break;
                                     case '3':
                                         setWeatherPty('눈');
                                         setWeatherImage(snowImg);
+                                        setBackgroundImage(snowyBg);
                                         break;
                                     case '4':
                                         setWeatherPty('소나기');
                                         setWeatherImage(rainyImg);
+                                        setBackgroundImage(rainyBg);
                                         break;
                                     default:
                                         setWeatherPty('알 수 없음');
@@ -126,10 +153,8 @@ const MyPlant: React.FC = () => {
                         }
                     });
                 } else {
-                    setError('API 응답에 문제가 있습니다.');
                 }
             } catch (error) {
-                setError('데이터를 불러오는 중 오류가 발생했습니다.');
             }
         };
 
@@ -137,20 +162,21 @@ const MyPlant: React.FC = () => {
     }, []);
 
     return (
-        <div className={styles.plantBox}>
-            <h3>내 식물의 경험치</h3>
-            {experience !== null ? (
-                <p>경험치: {experience}</p>
-            ) : (
-                <p>경험치를 불러오는 중...</p>
-            )}
-            {weatherSky && <p>하늘 상태: {weatherSky}</p>}
-            {weatherPty && <p>강수 형태: {weatherPty}</p>}
-            {weatherImage && <img src={weatherImage} alt="weather icon" className={styles.weatherImage} />}
-            {tmp !== null && <p>기온: {tmp}℃</p>}
-            <p>강수확률: {pop}%</p>
-            {error && <p className={styles.error}>오류: {error}</p>}
-        </div>
+      <div className={styles.plantBox} style={{ backgroundImage: `url(${backgroundImage})` }}>
+          <h3>내 식물의 경험치</h3>
+          {experience !== null ? (
+            <p>경험치: {experience}</p>
+          ) : (
+            <p>경험치를 불러오는 중...</p>
+          )}
+          {level !== null && <p>레벨: {level}</p>}
+          {weatherSky && <p>하늘 상태: {weatherSky}</p>}
+          {weatherPty && <p>강수 형태: {weatherPty}</p>}
+          {weatherImage && <img src={weatherImage} alt="weather icon" className={styles.weatherImage} />}
+          {tmp !== null && <p>기온: {tmp}℃</p>}
+          <p>강수확률: {pop}%</p>
+          {error && <p className={styles.error}>오류: {error}</p>}
+      </div>
     );
 };
 
