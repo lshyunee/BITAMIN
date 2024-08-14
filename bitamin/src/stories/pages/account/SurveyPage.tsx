@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/api/axiosInstance'
+import CheckModal from '@/stories/organisms/CheckModal'
 
 const questions = [
   '평소에는 아무렇지도 않던 일들이 괴롭고 귀찮게 느껴졌다.',
@@ -30,6 +31,22 @@ const SurveyPage: React.FC = () => {
   const [canTakeSurvey, setCanTakeSurvey] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
   const navigate = useNavigate()
+  const [isCheckModalOpen, setCheckModalOpen] = useState(false)
+
+  const closeCheckModal = () => {
+    setCheckModalOpen(false)
+  }
+
+  const handleConfirm = async () => {
+    // 확인 버튼 클릭 시의 로직
+    closeCheckModal()
+    navigate('/mypage')
+  }
+
+  const handleSecondaryAction = () => {
+    closeCheckModal()
+    navigate('/home')
+  }
 
   useEffect(() => {
     const checkSurveyEligibility = async () => {
@@ -73,11 +90,11 @@ const SurveyPage: React.FC = () => {
     const data = { checkupScore: totalScore }
 
     try {
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         '/members/self-assessment',
         data
       )
-      alert('자가진단 점수가 성공적으로 전송되었습니다.')
+      setCheckModalOpen(true)
     } catch (error) {
       console.error('점수 전송 실패:', error)
       alert('점수 전송에 실패했습니다.')
@@ -103,7 +120,7 @@ const SurveyPage: React.FC = () => {
         <div className="absolute top-0 left-0 w-full h-[15%] bg-[#f9ea9b]" />
 
         <div className="relative top-[calc(9/16*100vw*0.2)] left-[calc(50%-512px)] w-[1024px]">
-          <div className="relative w-[720px] mx-auto">
+          <div className="relative w-[80%] mx-auto">
             <div className="relative bg-white shadow-md rounded-lg p-8 mt-10">
               <div className="text-2xl font-bold">우울증 척도 (CES-D)</div>
               <b className="block text-sm mt-4 text-lg text-gray-600">
@@ -125,7 +142,7 @@ const SurveyPage: React.FC = () => {
                     {question}
                   </div>
                 </div>
-                <div className="flex mt-4 space-x-4 text-sm text-gray-600">
+                <div className="flex mt-4 space-x-4 text-sm text-gray-600 justify-center items-center">
                   <button
                     className={`px-4 py-2 rounded ${scores[index] === 0 ? 'bg-[#ff713c] text-white' : 'bg-gray-200'}`}
                     onClick={() => handleScoreChange(index, 0)}
@@ -172,6 +189,23 @@ const SurveyPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {isCheckModalOpen && (
+        <CheckModal
+          title="검사 완료!"
+          content="검사지 제출이 완료되었습니다."
+          iconSrc="fi.FiEdit"
+          confirmText="차트 보기"
+          onConfirm={handleConfirm}
+          onClose={closeCheckModal}
+          width="400px"
+          height="300px"
+          headerBackgroundColor="#FF713C"
+          buttonBorderColor="#FF713C"
+          buttonTextColor="#FF713C"
+          secondaryButtonText="닫기"
+          onSecondaryAction={handleSecondaryAction}
+        />
+      )}
     </>
   )
 }
