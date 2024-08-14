@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import axiosInstance, { setAccessToken } from 'api/axiosInstance' // 경로 수정
 import useAuthStore from 'store/useAuthStore' // 경로 수정
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/LoginPage.module.css'
-import HeaderBeforeLogin from '@/stories/organisms/common/HeaderBeforeLogin'
 import Modal from '@/stories/organisms/Modal'
+import { googleLogin, kakaoLogin } from '@/api/userAPI'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -19,11 +19,6 @@ const LoginPage: React.FC = () => {
     setAccessToken: setAuthAccessToken,
     setRefreshToken: setAuthRefreshToken,
   } = useAuthStore()
-
-  // 이거 없애도 되려낭
-  const onBItAMinTextClick = useCallback(() => {
-    // Add your code here
-  }, [])
 
   const closeModal = () => {
     const { accessToken, refreshToken } = responseData.data
@@ -64,9 +59,44 @@ const LoginPage: React.FC = () => {
     }
   }
 
+  const autoLogin = async (email:string,password:string) => {
+    try {
+      console.log('Login request data:', { email, password })
+      const response = await axiosInstance.post('/auth/login', {
+        email,
+        password,
+      })
+      setResponseData(response)
+      setModalOpen(true)
+    } catch (error: any) {
+      console.error('Login error:', error.response || error.message)
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Login failed'
+      alert(`Login failed: ${errorMessage}`)
+    }
+  }
+
   const handleSignUp = useCallback(() => {
     navigate('/signup')
   }, [navigate])
+
+  const handleGoogleLogin = () => {
+    googleLogin()
+  }
+
+  const handleKakaoLogin = () => {
+    kakaoLogin()
+  }
+  
+  useEffect(() => {
+    const query = new URLSearchParams(location.search)
+    const emailQuery = query.get('email')
+    const passwordQuery = query.get('password')
+    if (emailQuery && passwordQuery) {
+      autoLogin(emailQuery, passwordQuery)
+    }
+  }, [location.search])
+
   return (
     <>
       <div className={styles.div}>
@@ -114,29 +144,19 @@ const LoginPage: React.FC = () => {
               <div className={styles.component60}>
                 <div className={styles.component60Child} />
                 <div className={styles.component60Item} />
-                <div className={styles.component58}>
+                <div className={styles.component59} onClick={handleGoogleLogin}>
                   <img
-                    className={styles.reactIconssisinaver}
-                    alt=""
-                    src="react-icons/si/SiNaver.svg"
+                    className={styles.loginIcon}
+                    alt="Google Login"
+                    src="/src/assets/image/google.png"
                   />
-                  <div className={styles.div13}>네이버 로그인</div>
                 </div>
-                <div className={styles.component59}>
+                <div className={styles.component57} onClick={handleKakaoLogin}>
                   <img
-                    className={styles.reactIconsfcfcgoogle}
-                    alt=""
-                    src="react-icons/fc/FcGoogle.svg"
+                    className={styles.loginIcon}
+                    alt="Kakao Login"
+                    src="/src/assets/image/kakao2.png"
                   />
-                  <div className={styles.div13}>구글 로그인</div>
-                </div>
-                <div className={styles.component57}>
-                  <img
-                    className={styles.component57Child}
-                    alt=""
-                    src="Frame 1364.png"
-                  />
-                  <div className={styles.div15}>카카오 로그인</div>
                 </div>
               </div>
             </div>
@@ -145,15 +165,15 @@ const LoginPage: React.FC = () => {
       </div>
       {isModalOpen && (
         <Modal
-        title="로그인"
-        content="로그인 성공!"
-        iconSrc="ri.RiCheckFill"
-        onClose={closeModal}
-        headerBackgroundColor="#FF713C"
-        buttonBorderColor="#FF713C"
-        buttonTextColor="#FF713C"
-        imgColor="#FF713C"
-      />
+          title="로그인"
+          content="로그인 성공!"
+          iconSrc="ri.RiCheckFill"
+          onClose={closeModal}
+          headerBackgroundColor="#FF713C"
+          buttonBorderColor="#FF713C"
+          buttonTextColor="#FF713C"
+          imgColor="#FF713C"
+        />
       )}
     </>
   )
