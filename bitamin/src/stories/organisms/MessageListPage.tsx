@@ -30,7 +30,6 @@ const MessageListPage: React.FC = () => {
       setMessages((prevMessages) =>
         prevMessages.filter((message) => message.id !== toDeleteMessage)
       )
-      setMessages(messages.filter((message) => message.id !== toDeleteMessage))
       setModalOpen(true)
     } catch (error) {
       console.error('Failed to delete message:', error)
@@ -47,7 +46,13 @@ const MessageListPage: React.FC = () => {
     const loadMessages = async () => {
       try {
         const data = await fetchMessages()
-        setMessages(data)
+
+        // 날짜 형식 변환
+        const formattedMessages = data.map((message: Message) => ({
+          ...message,
+          sendDate: formatDate(message.sendDate),
+        }))
+        setMessages(formattedMessages)
       } catch (error) {
         console.error('Failed to fetch messages:', error)
       }
@@ -55,6 +60,17 @@ const MessageListPage: React.FC = () => {
 
     loadMessages()
   }, [])
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`
+  }
 
   const handleDelete = async (id: number) => {
     setToDeleteMessage(id)
