@@ -12,7 +12,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {!excludeHeaderPaths.includes(location.pathname) && <Header />}
-      <div className="flex-grow mt-[5%]">
+      <div className="flex-grow mt-[6%]">
         <AppRouter />
       </div>
       {!excludeFooterPaths.includes(location.pathname) && <Footer />}
