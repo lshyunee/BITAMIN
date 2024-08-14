@@ -43,8 +43,27 @@ const useUserStore = create<UserState>()(
           user: state.user ? { ...state.user, profileUrl: url } : null,
         }))
       },
+
       clearUserData: () => {
-        set({ user: null, loading: false, error: null })
+        set({
+          user: {
+            email: '',
+            name: '',
+            nickname: '',
+            birthday: '',
+            sidoName: '',
+            gugunName: '',
+            dongName: '',
+            profileUrl: '',
+            lat: '',
+            lng: '',
+            xcoordinate: '',
+            ycoordinate: '',
+            // 필요한 다른 속성들도 여기서 초기화할 수 있습니다.
+          },
+          loading: false,
+          error: null,
+        })
       },
     }),
     {

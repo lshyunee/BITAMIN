@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
   const [, setCookie] = useCookies(['refreshToken'])
   const navigate = useNavigate()
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
-  const [responseData, setResponseData] = useState({})
+  const [responseData, setResponseData] = useState<LoginResponse | null>(null) // 타입 지정
 
   const { fetchUser } = useUserStore()
 
@@ -30,25 +30,28 @@ const LoginPage: React.FC = () => {
   } = useAuthStore()
 
   const closeModal = () => {
-    const { accessToken, refreshToken } = responseData.data
-    console.log('Server response:', responseData.data) // 서버 응답 확인
-    console.log('Access Token:', accessToken) // 토큰 확인
-    console.log('Refresh Token:', refreshToken)
+    if (responseData) {
+      const { accessToken, refreshToken } = responseData
+      console.log('Server response:', responseData) // 서버 응답 확인
+      console.log('Access Token:', accessToken) // 토큰 확인
 
-    setAccessToken(accessToken) // axiosInstance에 accessToken 설정
-    setAuthAccessToken(accessToken) // zustand 상태 관리에 accessToken 설정
-    setAuthRefreshToken(refreshToken) // zustand 상태 관리에 refreshToken 설정
+      setAccessToken(accessToken) // axiosInstance에 accessToken 설정
+      setAuthAccessToken(accessToken) // zustand 상태 관리에 accessToken 설정
+      setAuthRefreshToken(refreshToken) // zustand 상태 관리에 refreshToken 설정
 
-    setCookie('refreshToken', refreshToken, {
-      path: '/',
-      secure: true,
-      sameSite: 'strict', // 또는 'lax' 또는 'none'으로 설정
-    })
+      setCookie('refreshToken', refreshToken, {
+        path: '/',
+        secure: true,
+        sameSite: 'strict', // 또는 'lax' 또는 'none'으로 설정
+      })
 
-    // 세션 스토리지에 인증 상태 저장
-    sessionStorage.setItem('isAuthenticated', 'true')
-    setModalOpen(false)
-    navigate('/home')
+      // 세션 스토리지에 인증 상태 저장
+      sessionStorage.setItem('isAuthenticated', 'true')
+      setModalOpen(false)
+      navigate('/home')
+    } else {
+      console.error('No response data available for modal processing')
+    }
   }
 
   const handleLogin = async () => {
@@ -94,7 +97,7 @@ const LoginPage: React.FC = () => {
         email,
         password,
       })
-      setResponseData(response)
+      setResponseData(response.data)
       setModalOpen(true)
     } catch (error: any) {
       console.error('Login error:', error.response || error.message)
