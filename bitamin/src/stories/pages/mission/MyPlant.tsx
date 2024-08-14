@@ -57,7 +57,7 @@ const MyPlant: React.FC = () => {
 
     useEffect(() => {
         const fetchWeatherData = async () => {
-            const API_URL = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst`;
+            const API_URL = import.meta.env.VITE_APP_WEATHER_URL;
 
             const today = new Date();
             let year = today.getFullYear();
@@ -77,11 +77,11 @@ const MyPlant: React.FC = () => {
             };
 
             const closestTime = getClosestTime();
-
+            const ServiceKey = import.meta.env.VITE_APP_WEATHER_KEY;
             try {
                 const response = await axios.get(API_URL, {
                     params: {
-                        ServiceKey: 'aQ/KD9B2XVnmNv0SkIefiz7rV6Ccy78ElnPFBkXZLRQ7jBbpWfCIBnp16ZEHqHC24e/AiNSPdfFIl66DEGReng==',
+                        ServiceKey:ServiceKey,
                         dataType: 'JSON',
                         base_date: todayStr,
                         base_time: closestTime,
@@ -91,6 +91,7 @@ const MyPlant: React.FC = () => {
                     },
                     responseType: 'json',
                 });
+
 
                 if (response.data.response?.body?.items?.item) {
                     const data = response.data.response.body.items.item;
