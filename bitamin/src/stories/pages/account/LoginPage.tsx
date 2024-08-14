@@ -1,19 +1,23 @@
+<<<<<<< bitamin/src/stories/pages/account/LoginPage.tsx
 import { useState, useCallback, useEffect } from 'react'
-import axiosInstance, { setAccessToken } from 'api/axiosInstance' // 경로 수정
-import useAuthStore from 'store/useAuthStore' // 경로 수정
+import axiosInstance, { setAccessToken } from 'api/axiosInstance'
+import useAuthStore from 'store/useAuthStore' 
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/LoginPage.module.css'
 import Modal from '@/stories/organisms/Modal'
 import { googleLogin, kakaoLogin } from '@/api/userAPI'
 
+interface LoginResponse {
+  accessToken: string
+  refreshToken: string
+}
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [, setCookie] = useCookies(['refreshToken']) // `cookies` 대신 `_`를 사용
+  const [, setCookie] = useCookies(['refreshToken'])
   const navigate = useNavigate()
-  const [isModalOpen, setModalOpen] = useState<boolean>(false)
-  const [responseData, setResponseData] = useState({})
 
   const {
     setAccessToken: setAuthAccessToken,
@@ -45,12 +49,29 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     try {
       console.log('Login request data:', { email, password })
-      const response = await axiosInstance.post('/auth/login', {
+      const response = await axiosInstance.post<LoginResponse>('/auth/login', {
         email,
         password,
       })
-      setResponseData(response)
-      setModalOpen(true)
+
+      const { accessToken, refreshToken } = response.data
+      console.log('Server response:', response.data) // 서버 응답 확인
+      console.log('Access Token:', accessToken) // 토큰 확인
+      console.log('Refresh Token:', refreshToken)
+
+      setAccessToken(accessToken)
+      setAuthAccessToken(accessToken)
+      setAuthRefreshToken(refreshToken)
+
+      setCookie('refreshToken', refreshToken, {
+        path: '/',
+        secure: true,
+        sameSite: 'strict',
+      })
+
+      sessionStorage.setItem('isAuthenticated', 'true')
+      alert('Login successful!')
+      navigate('/home')
     } catch (error: any) {
       console.error('Login error:', error.response || error.message)
       const errorMessage =
