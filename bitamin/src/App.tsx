@@ -6,7 +6,7 @@ import Header from './stories/organisms/common/Header'
 
 const AppContent: React.FC = () => {
   const location = useLocation()
-  const excludeHeaderPaths = ['/']
+  const excludeHeaderPaths = ['/', '/consult']
   const excludeFooterPaths = ['/', '/modal', '/consult', '/healthup']
 
   return (
