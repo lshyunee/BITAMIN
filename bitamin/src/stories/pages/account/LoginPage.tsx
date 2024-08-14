@@ -5,6 +5,7 @@ import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/LoginPage.module.css'
 import HeaderBeforeLogin from '@/stories/organisms/common/HeaderBeforeLogin'
+import Modal from '@/stories/organisms/Modal'
 
 // 서버 응답 타입을 정의
 interface LoginResponse {
@@ -17,11 +18,40 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('')
   const [, setCookie] = useCookies(['refreshToken']) // `cookies` 대신 `_`를 사용
   const navigate = useNavigate()
+  const [isModalOpen, setModalOpen] = useState<boolean>(false)
+  const [responseData, setResponseData] = useState({})
 
   const {
     setAccessToken: setAuthAccessToken,
     setRefreshToken: setAuthRefreshToken,
   } = useAuthStore()
+
+  // 이거 없애도 되려낭
+  const onBItAMinTextClick = useCallback(() => {
+    // Add your code here
+  }, [])
+
+  const closeModal = () => {
+    const { accessToken, refreshToken } = responseData.data
+    console.log('Server response:', responseData.data) // 서버 응답 확인
+    console.log('Access Token:', accessToken) // 토큰 확인
+    console.log('Refresh Token:', refreshToken)
+
+    setAccessToken(accessToken) // axiosInstance에 accessToken 설정
+    setAuthAccessToken(accessToken) // zustand 상태 관리에 accessToken 설정
+    setAuthRefreshToken(refreshToken) // zustand 상태 관리에 refreshToken 설정
+
+    setCookie('refreshToken', refreshToken, {
+      path: '/',
+      secure: true,
+      sameSite: 'strict', // 또는 'lax' 또는 'none'으로 설정
+    })
+
+    // 세션 스토리지에 인증 상태 저장
+    sessionStorage.setItem('isAuthenticated', 'true')
+    setModalOpen(false)
+    navigate('/home')
+  }
 
   const handleLogin = async () => {
     try {
@@ -30,26 +60,8 @@ const LoginPage: React.FC = () => {
         email,
         password,
       })
-
-      const { accessToken, refreshToken } = response.data
-      console.log('Server response:', response.data) // 서버 응답 확인
-      console.log('Access Token:', accessToken) // 토큰 확인
-      console.log('Refresh Token:', refreshToken)
-
-      setAccessToken(accessToken) // axiosInstance에 accessToken 설정
-      setAuthAccessToken(accessToken) // zustand 상태 관리에 accessToken 설정
-      setAuthRefreshToken(refreshToken) // zustand 상태 관리에 refreshToken 설정
-
-      setCookie('refreshToken', refreshToken, {
-        path: '/',
-        secure: true,
-        sameSite: 'strict', // 또는 'lax' 또는 'none'으로 설정
-      })
-
-      // 세션 스토리지에 인증 상태 저장
-      sessionStorage.setItem('isAuthenticated', 'true')
-      alert('Login successful!')
-      navigate('/home')
+      setResponseData(response)
+      setModalOpen(true)
     } catch (error: any) {
       console.error('Login error:', error.response || error.message)
       const errorMessage =
@@ -138,6 +150,18 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <Modal
+        title="로그인"
+        content="로그인 성공!"
+        iconSrc="ri.RiCheckFill"
+        onClose={closeModal}
+        headerBackgroundColor="#FF713C"
+        buttonBorderColor="#FF713C"
+        buttonTextColor="#FF713C"
+        imgColor="#FF713C"
+      />
+      )}
     </>
   )
 }
