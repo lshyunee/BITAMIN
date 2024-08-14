@@ -3,6 +3,8 @@ import axiosInstance, { setAccessToken } from 'api/axiosInstance'
 import useAuthStore from 'store/useAuthStore'
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
+import useUserStore from '@/store/useUserStore'
+import { loginUser } from 'api/userAPI' // 로그인 API 함수 가져오기
 import styles from 'styles/account/LoginPage.module.css'
 
 interface LoginResponse {
@@ -15,6 +17,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('')
   const [, setCookie] = useCookies(['refreshToken'])
   const navigate = useNavigate()
+  const { fetchUser } = useUserStore()
 
   const {
     setAccessToken: setAuthAccessToken,
@@ -24,14 +27,11 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     try {
       console.log('Login request data:', { email, password })
-      const response = await axiosInstance.post<LoginResponse>('/auth/login', {
-        email,
-        password,
-      })
 
-      const { accessToken, refreshToken } = response.data
-      console.log('Server response:', response.data) // 서버 응답 확인
-      console.log('Access Token:', accessToken) // 토큰 확인
+      // loginUser 함수로 로그인 시도
+      const { accessToken, refreshToken } = await loginUser(email, password)
+
+      console.log('Access Token:', accessToken)
       console.log('Refresh Token:', refreshToken)
 
       setAccessToken(accessToken)
@@ -44,14 +44,19 @@ const LoginPage: React.FC = () => {
         sameSite: 'strict',
       })
 
+      // axiosInstance에 accessToken 설정
+      axiosInstance.defaults.headers.common['Authorization'] =
+        `Bearer ${accessToken}`
+
+      // 로그인 후 유저 정보 강제 업데이트
+      await fetchUser()
+
       sessionStorage.setItem('isAuthenticated', 'true')
       alert('Login successful!')
       navigate('/home')
     } catch (error: any) {
-      console.error('Login error:', error.response || error.message)
-      const errorMessage =
-        error.response?.data?.message || error.message || 'Login failed'
-      alert(`Login failed: ${errorMessage}`)
+      console.error('Login error:', error.message)
+      alert(`사용자를 찾을 수 없습니다.: ${error.message}`)
     }
   }
 

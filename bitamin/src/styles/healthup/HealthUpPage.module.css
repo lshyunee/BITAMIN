@@ -18,6 +18,7 @@
   /* left: calc(50% - 512px); */
   background-color: rgba(252, 210, 179, 0.25);
   width: 100%;
+  height: 714px;
 }
 /* 운동 url 뜨는 네모 */
 .upItem {
@@ -234,11 +235,10 @@
 /* 운동 설명 */
 .div13 {
   position: absolute;
-  top: 73.55vh;
-  left: 54.22vw;
+  top: 634px;
+  left: 942px;
   font-family: NanumBarunpen, sans-serif;
   text-align: left;
-  font-size: larger;
 }
 
 .p {
