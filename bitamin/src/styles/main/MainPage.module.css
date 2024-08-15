@@ -1,5 +1,4 @@
 .container {
-  margin-top: 10%;
   width: 100%;
   position: relative;
   background-color: #fff;
@@ -76,9 +75,19 @@
   width: 280px;
   height: 280px;
   object-fit: cover;
-  z-index: 1000;
+  z-index: 10;
   cursor: pointer;
   animation: zoom 1s ease-in-out 3; /* 애니메이션 1초 동안 3번 반복 */
+}
+
+.mainImg2 {
+  position: absolute;
+  top: 99px;
+  right: 0;
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  z-index: 1000;
 }
 
 .clickmeImg {
@@ -89,7 +98,7 @@
   width: 145px;
   height: 50px;
   object-fit: cover;
-  z-index: 1000;
+  z-index: 10;
   cursor: pointer;
   border: 6px solid #ffffff; /* 테두리 두께와 색상 설정 */
   border-radius: 8px; /* 테두리 모서리를 둥글게 설정 (옵션) */
@@ -276,11 +285,15 @@
     transform: translateX(-50%);
   }
 
-  .inner,
-  .consultBox,
-  .questBox,
-  .consultBorder,
-  .questBorder {
+  .mainImg2 {
+    width: 200px;
+    height: 200px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .inner, .consultBox, .questBox, .consultBorder, .questBorder {
     width: 90%;
     left: 50%;
     transform: translateX(-50%);
@@ -314,11 +327,12 @@
     height: 150px;
   }
 
-  .inner,
-  .consultBox,
-  .questBox,
-  .consultBorder,
-  .questBorder {
+  .mainImg2 {
+    width: 150px;
+    height: 150px;
+  }
+
+  .inner, .consultBox, .questBox, .consultBorder, .questBorder {
     width: 90%;
     left: 50%;
     transform: translateX(-50%);
@@ -345,11 +359,12 @@
     height: 120px;
   }
 
-  .inner,
-  .consultBox,
-  .questBox,
-  .consultBorder,
-  .questBorder {
+  .mainImg2 {
+    width: 120px;
+    height: 120px;
+  }
+
+  .inner, .consultBox, .questBox, .consultBorder, .questBorder {
     width: 90%;
     left: 50%;
     transform: translateX(-50%);
