@@ -2,7 +2,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import MainPage from 'stories/pages/main/MainPage'
 import MissionPage from 'stories/pages/mission/MissionPage'
-import Weather from 'stories/pages/mission/Weather'
 import LoginPage from 'stories/pages/account/LoginPage'
 import SignUpPage from 'stories/pages/account/SignUpPage'
 import SurveyPage from 'stories/pages/account/SurveyPage'
@@ -25,7 +24,6 @@ import ComponentPage from 'stories/pages/ComponentPage'
 import PrivateRoute from './PrivateRouter'
 import PasswordChangePage from '@/stories/pages/account/PasswordChangePage'
 import CompleteMission from '@/stories/pages/mission/CompleteMission.tsx'
-import CalendarCompleteMission from '@/stories/pages/mission/CalendarCompleteMission.tsx'
 import MyPlant from '@/stories/pages/mission/MyPlant.tsx'
 import ModalExampleUsage from '@/stories/organisms/ModalExampleUsage'
 
@@ -66,8 +64,6 @@ const AppRouter: React.FC = () => {
         <Route path="/mission" element={<MissionPage />} />
         {/* <Route path="/missionform" element={<MissionForm />} />
         <Route path="/complete" element={<CompleteMission />} /> */}
-        <Route path="/completecal" element={<CalendarCompleteMission />} />
-        <Route path="/weather" element={<Weather />} />
         <Route path="/plant" element={<MyPlant />} />
 
         {/* 관리자페이지 */}
