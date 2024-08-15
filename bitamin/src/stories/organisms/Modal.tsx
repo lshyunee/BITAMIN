@@ -119,7 +119,7 @@ const getIconComponent = (iconSrc: string, size: number) => {
     return (FiIcons as any)[iconName]
   } else if (library === 'src') {
     return (props: any) => (
-      <img src={iconName} width={size} {...props} />
+      <img src={alert} width={size} {...props} />
     )
   }
   return null
