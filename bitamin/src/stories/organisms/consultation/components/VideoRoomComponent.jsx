@@ -12,6 +12,9 @@ import useUserStore from '../../../../store/useUserStore'
 import { joinConsultation } from '../../../../store/useConsultationStore'
 import ConfirmLeaveModal from './ConfirmLeaveModal' // 모달 컴포넌트
 import { useChatStore } from '../../../../store/useChatStore' // ChatStore 추가
+import FooterComponent from './video/FooterComponent'
+import HeaderComponent from './video/HeaderComponent'
+import SidebarComponent from './video/SidebarComponent'
 
 var localUser = new UserModel()
 
@@ -634,6 +637,14 @@ class VideoRoomComponent extends Component {
 
     return (
       <>
+        {/* <HeaderComponent
+          isPrivate={true} // 방이 비밀방인지 여부에 따라 변경
+          title={mySessionId} // 세션 ID를 방 제목으로 사용
+        /> */}
+        {/* <SidebarComponent
+          participants={this.state.participants}
+          localUser={localUser}
+        /> */}
         {this.state.showModal && (
           <ConfirmLeaveModal
             onConfirm={() => this.handleConfirmLeave(this.state.consultationId)}
@@ -717,6 +728,23 @@ class VideoRoomComponent extends Component {
               </ul>
             </div>
           </div>
+
+          {/* <SidebarComponent
+            participants={this.state.participants}
+            onParticipantAction={this.handleParticipantAction}
+            localUser={localUser}
+          /> */}
+
+          {/* <FooterComponent
+            camStatusChanged={this.camStatusChanged}
+            micStatusChanged={this.micStatusChanged}
+            screenShare={this.screenShare}
+            stopScreenShare={this.stopScreenShare}
+            onLeave={() => this.setState({ showModal: true })}
+            isAudioActive={localUser.isAudioActive()}
+            isVideoActive={localUser.isVideoActive()}
+            isScreenSharing={localUser.isScreenShareActive()}
+          /> */}
 
           {/* GPT 버튼 주석 처리됨 */}
           {/*
