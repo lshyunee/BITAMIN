@@ -12,6 +12,7 @@ import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import styles from 'styles/account/SignUpPage.module.css'
 import HeaderBeforeLogin from '@/stories/organisms/common/HeaderBeforeLogin'
+import Modal from '@/stories/organisms/Modal'
 
 const SignUpPage: React.FC = () => {
   const [signupForm, setSignupForm] = useState({
@@ -37,7 +38,16 @@ const SignUpPage: React.FC = () => {
   const [sidoNames, setSidoNames] = useState<string[]>([])
   const [gugunNames, setGugunNames] = useState<string[]>([])
   const [dongNames, setDongNames] = useState<string[]>([])
+  const [isQueryPrefilled, setIsQueryPrefilled] = useState<boolean>(false)
 
+  // 모달 창
+  const [isModalOpen, setModalOpen] = useState<string | null>(null)
+
+  const openModal = (type: string) => () => setModalOpen(type)
+  const closeModal = () => {
+    setModalOpen(null)
+    navigate('/login')
+  }
   const {
     setAccessToken: setAuthAccessToken,
     setRefreshToken: setAuthRefreshToken,
@@ -152,7 +162,7 @@ const SignUpPage: React.FC = () => {
       })
 
       setSuccess('회원가입이 성공적으로 완료되었습니다.')
-      navigate('/login') // 회원가입 성공 시 login 페이지로 이동
+      openModal('signupComplete')()
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || error.message || '회원가입 실패'
@@ -162,9 +172,23 @@ const SignUpPage: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search)
+    const emailQuery = query.get('email')
+    const passwordQuery = query.get('password')
+    if (emailQuery && passwordQuery) {
+      setSignupForm((prevForm) => ({
+        ...prevForm,
+        email: emailQuery,
+        password: passwordQuery,
+        passwordConfirm: passwordQuery,
+      }))
+      setIsQueryPrefilled(true)
+    }
+  }, [window.location.search])
+
   return (
     <>
-      <HeaderBeforeLogin />
       <div className={styles.div}>
         <div className={styles.backred}></div>
         <div className={styles.component66}>
@@ -203,6 +227,7 @@ const SignUpPage: React.FC = () => {
                   }`}
                   placeholder="이메일을 입력하세요"
                   required
+                  disabled={isQueryPrefilled}
                 />
               </div>
               <div className={styles.component70}>
@@ -254,6 +279,7 @@ const SignUpPage: React.FC = () => {
                       : ''
                   }`}
                   placeholder="비밀번호"
+                  disabled={isQueryPrefilled}
                   required
                 />
               </div>
@@ -269,6 +295,7 @@ const SignUpPage: React.FC = () => {
                       : ''
                   }`}
                   placeholder="비밀번호 확인"
+                  disabled={isQueryPrefilled}
                   required
                 />
               </div>
@@ -345,6 +372,18 @@ const SignUpPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {isModalOpen === 'signupComplete' && (
+        <Modal
+          title="회원가입 완료"
+          content="회원가입이 성공적으로 완료되었습니다."
+          iconSrc="fi.FiEdit"
+          onClose={closeModal}
+          headerBackgroundColor="#FF713C"
+          buttonBorderColor="#FF713C"
+          buttonTextColor="#FF713C"
+          imgColor="#333"
+        />
+      )}
     </>
   )
 }
