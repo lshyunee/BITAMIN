@@ -1,0 +1,76 @@
+.mainImg {
+  position: absolute;
+  top: 99px;
+  right: 0;
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+}
+.loginexGgul {
+  position: absolute;
+  top: 500px;
+  left: 28%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+.inner {
+  position: absolute;
+  top: 73px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(249, 234, 155, 0.84);
+  width: 100%;
+  height: 306px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.div3 {
+  font-size: 28px;
+  font-family: 'Ownglyph ryuttung';
+  color: #333;
+  text-align: center;
+}
+.p {
+  margin: 0;
+}
+
+.groupChild {
+  position: absolute;
+  top: 55vh;
+  left: 45vw;
+}
+.suggestionSection {
+  position: absolute;
+  top: 65%;
+  left: 38%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.suggestionText {
+  font-size: 18px;
+  color: #333;
+}
+.underlineText {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.underlineText span {
+  color: #ff6b6b;
+  text-decoration: underline;
+}
+.taglineText {
+  font-size: 16px;
+  margin-top: 10px;
+  color: #666;
+}
+
+.subtext {
+  font-size: 14px;
+  color: #999;
+}
