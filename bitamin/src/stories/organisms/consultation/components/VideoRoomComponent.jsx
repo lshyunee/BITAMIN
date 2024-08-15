@@ -9,7 +9,7 @@ import OpenViduLayout from '../layout/openvidu-layout'
 import UserModel from '../models/user-model'
 import ToolbarComponent from './toolbar/ToolbarComponent'
 import useUserStore from '../../../../store/useUserStore'
-import { useConsultationStore } from '../../../../store/useConsultationStore' // 수정된 부분
+import { joinConsultation } from '../../../../store/useConsultationStore'
 import ConfirmLeaveModal from './ConfirmLeaveModal' // 모달 컴포넌트
 import { useChatStore } from '../../../../store/useChatStore' // ChatStore 추가
 
@@ -23,7 +23,7 @@ class VideoRoomComponent extends Component {
     this.layout = new OpenViduLayout()
 
     const { sessionId, token, consultationId } =
-      useConsultationStore.getState().joinconsultation || {} // zustand에서 sessionId와 token 상태 가져오기
+      joinConsultation.getState().joinconsultation || {} // zustand에서 sessionId와 token 상태 가져오기
     const { nickname } = useUserStore.getState().user || {} // zustand에서 nickname 상태 가져오기
 
     this.state = {
@@ -38,10 +38,7 @@ class VideoRoomComponent extends Component {
       showModal: false, // 모달 표시 여부 상태
       consultationId: consultationId,
       participants: [], // 참여자 리스트 상태 추가
-      recognitionActive: false, // STT 실행 상태를 관리하는 추가 상태
     }
-
-    this.recognition = null // recognition 객체를 클래스 변수로 선언
 
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
@@ -101,11 +98,6 @@ class VideoRoomComponent extends Component {
     window.removeEventListener('beforeunload', this.onbeforeunload)
     window.removeEventListener('resize', this.updateLayout)
     window.removeEventListener('resize', this.checkSize)
-
-    if (this.recognition) {
-      this.recognition.stop() // 컴포넌트가 언마운트 될 때 STT 중지
-    }
-
     this.leaveSession()
   }
 
@@ -306,10 +298,7 @@ class VideoRoomComponent extends Component {
 
     // STT를 통해 음성 인식 시작
     if (localUser.isAudioActive()) {
-      this.startStt() // 마이크가 켜졌을 때 STT를 시작
-    } else if (this.recognition) {
-      this.recognition.stop() // 마이크가 꺼졌을 때 STT를 중지
-      this.setState({ recognitionActive: false })
+      this.startStt()
     }
   }
 
@@ -446,6 +435,7 @@ class VideoRoomComponent extends Component {
         console.log('STT ended.')
         this.setState({ recognitionActive: false }) // STT가 종료되면 상태 업데이트
         this.startStt() // STT가 종료된 후 재시작
+        console.log('STT restart.')
       }
     }
 
