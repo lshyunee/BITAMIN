@@ -40,6 +40,7 @@ export class WebSocketService {
   }
 
   public activate() {
+    console.log('activate됨????????')
     if (!this.client.active) {
       this.client.activate()
     }

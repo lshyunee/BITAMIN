@@ -80,6 +80,7 @@ export const joinConsultation = create<JoinConsultationState>()(
           const webSocketService = new WebSocketService() // WebSocketService 인스턴스 생성
           webSocketService.activate() // WebSocket 연결 활성화
 
+          console.log(1111)
           // 주제를 구독하고 메시지를 처리하는 로직을 추가합니다.
           webSocketService.subscribeToTopic(
             `/sub/consultations/${consultationId}`,
