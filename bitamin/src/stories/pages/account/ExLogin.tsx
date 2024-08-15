@@ -3,6 +3,8 @@ import { getPhrases } from '@/api/phraseAPI'
 import styles from 'styles/account/ExLogin.module.css'
 import mainImg from 'assets/image/mainImg.png'
 import loginexGgul from 'assets/image/loginexGgul.png'
+import mypageImg from 'assets/image/mypageImg.png'
+import healthPageImg from 'assets/image/health.png'
 
 const ExLogin: React.FC = () => {
   const [phraseContent, setPhraseContent] = useState('') // phraseContent 상태 추가
@@ -11,7 +13,7 @@ const ExLogin: React.FC = () => {
     const fetchPhrase = async () => {
       try {
         const data = await getPhrases()
-        setPhraseContent(data.phrase)
+        setPhraseContent(data.phraseContent)
       } catch (error) {
         console.error('Error fetching the phrase:', error)
       }
@@ -23,6 +25,7 @@ const ExLogin: React.FC = () => {
   return (
     <div>
       <div className={styles.innerSection}>
+        <img className={styles.mainImg2} alt="Main Image" src={mainImg} />
         <div className={styles.inner}>
           <div className={styles.div3}>
             <p className={styles.p}>{phraseContent}</p>
@@ -79,8 +82,14 @@ const ExLogin: React.FC = () => {
         <span>BItAMin</span>
         <b className={styles.b1}>과 함께 시작해 볼까요?</b>
       </div>
+      <img className={styles.mypageImg} src={mypageImg} alt="MyPageImg" />
       <img className={styles.loginexGgul} src={loginexGgul} alt="" />
       <img className={styles.mainImg} alt="Main Image" src={mainImg} />
+      <img
+        className={styles.healthPageImg}
+        src={healthPageImg}
+        alt="건강up페이지"
+      />
 
       <button
         onClick={() => (window.location.href = '/login')}
