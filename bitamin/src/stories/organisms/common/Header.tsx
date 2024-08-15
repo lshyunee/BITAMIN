@@ -82,7 +82,7 @@ const Header: FunctionComponent = () => {
           onClick={onConsultationClick}
         >
           <div className="w-[5rem] h-[1.438rem] flex flex-row items-end justify-center">
-            <div className="relative text-[1.2rem]">상담</div>
+            <div className="relative text-[1rem]">상담</div>
           </div>
           <div
             className={`w-full mt-2 h-[0.125rem] ${
@@ -97,7 +97,7 @@ const Header: FunctionComponent = () => {
           onClick={onMissionClick}
         >
           <div className="w-[5rem] h-[1.438rem] flex flex-row items-end justify-center">
-            <div className="relative text-[1.2rem]">미션</div>
+            <div className="relative text-[1rem]">미션</div>
           </div>
           <div
             className={`w-full mt-2 h-[0.125rem] ${
@@ -112,7 +112,7 @@ const Header: FunctionComponent = () => {
           onClick={onHealthUPClick}
         >
           <div className="w-[5rem] h-[1.438rem] flex flex-row items-end justify-end">
-            <div className="relative text-[1.2rem]">건강</div>
+            <div className="relative text-[1rem]">건강</div>
             <div className="w-[1.688rem] h-[2.25rem] flex flex-row items-start justify-center ml-[-0.25rem] text-brand-primary font-ownglyph-ryuttung">
               <div className="w-[1.375rem] relative flex items-center justify-center h-[2.063rem] shrink-0">
                 UP
