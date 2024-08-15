@@ -2,7 +2,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import MainPage from 'stories/pages/main/MainPage'
 import MissionPage from 'stories/pages/mission/MissionPage'
-import Weather from 'stories/pages/mission/Weather'
 import LoginPage from 'stories/pages/account/LoginPage'
 import SignUpPage from 'stories/pages/account/SignUpPage'
 import SurveyPage from 'stories/pages/account/SurveyPage'
@@ -65,7 +64,6 @@ const AppRouter: React.FC = () => {
         <Route path="/mission" element={<MissionPage />} />
         {/* <Route path="/missionform" element={<MissionForm />} />
         <Route path="/complete" element={<CompleteMission />} /> */}
-        <Route path="/weather" element={<Weather />} />
         <Route path="/plant" element={<MyPlant />} />
 
         {/* 관리자페이지 */}
