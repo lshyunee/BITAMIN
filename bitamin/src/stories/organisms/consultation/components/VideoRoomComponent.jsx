@@ -44,7 +44,7 @@ class VideoRoomComponent extends Component {
       participants: [], // 참여자 리스트 상태 추가
       roomData: null, // roomData 상태 추가
       count: 0, // 초기 count 값을 0으로 설정
-      maxCount: roomData.category === '미술' ? 6 : 5, // category가 '미술'일 경우 6, 그 외에는 5
+      maxCount: 0, // 초기값을 0으로 설정
     }
 
     this.joinSession = this.joinSession.bind(this)
@@ -99,6 +99,10 @@ class VideoRoomComponent extends Component {
       const roomData = fetchRoomData.getState().roomData
       this.setState({ roomData })
       console.log('roomdata입니다', roomData)
+    })
+
+    this.setState({
+      maxCount: this.state.roomData?.category === '미술' ? 6 : 5,
     })
   }
 
