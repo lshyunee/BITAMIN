@@ -81,6 +81,16 @@
   animation: zoom 1s ease-in-out 3; /* 애니메이션 1초 동안 3번 반복 */
 }
 
+.mainImg2 {
+  position: absolute;
+  top: 99px;
+  right: 0;
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  z-index: 1000;
+}
+
 .clickmeImg {
   position: absolute;
   top: 99px;
@@ -277,6 +287,14 @@
     transform: translateX(-50%);
   }
 
+  .mainImg2 {
+    width: 200px;
+    height: 200px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .inner, .consultBox, .questBox, .consultBorder, .questBorder {
     width: 90%;
     left: 50%;
@@ -309,6 +327,11 @@
     height: 150px;
   }
 
+  .mainImg2 {
+    width: 150px;
+    height: 150px;
+  }
+
   .inner, .consultBox, .questBox, .consultBorder, .questBorder {
     width: 90%;
     left: 50%;
@@ -329,6 +352,11 @@
   }
 
   .mainImg {
+    width: 120px;
+    height: 120px;
+  }
+
+  .mainImg2 {
     width: 120px;
     height: 120px;
   }

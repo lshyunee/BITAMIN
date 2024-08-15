@@ -6,12 +6,6 @@ import useUserStore from 'store/useUserStore'
 import { getPhrases } from '@/api/phraseAPI'
 import styles from 'styles/main/MainPage.module.css'
 import mainImg from 'assets/image/mainImg.png'
-import recordStop from '*.png'
-import recordPlay from '*.png'
-import recordStart from '*.png'
-import recordAgain from '*.png'
-import recordSave from '*.png'
-import recordBackGroundImg from '*.png'
 
 const ExLogin: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -26,7 +20,7 @@ const ExLogin: React.FC = () => {
     const fetchPhrase = async () => {
       try {
         const data = await getPhrases()
-        setPhraseContent(data.phrase)
+        setPhraseContent(data.phraseContent)
       } catch (error) {
         console.error('Error fetching the phrase:', error)
       }
@@ -68,7 +62,7 @@ const ExLogin: React.FC = () => {
   return (
     <div>
       <div className={styles.innerSection}>
-        <img className={styles.mainImg} alt="Main Image" src={mainImg} />
+        <img className={styles.mainImg2} alt="Main Image" src={mainImg} />
         <div className={styles.inner}>
           <div className={styles.div3}>
             <p className={styles.p}>{phraseContent}</p>
