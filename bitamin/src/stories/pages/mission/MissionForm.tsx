@@ -13,7 +13,7 @@ interface MissionFormProps {
   onMissionComplete: () => void // 콜백 함수 정의
 }
 
-const Missionform: React.FC<MissionFormProps> = ({ onMissionComplete }) => {
+const MissionForm: React.FC<MissionFormProps> = ({ onMissionComplete }) => {
   const { mission, substituteCount, fetchMission, handleSubstituteMission } =
     useMissionStore()
   const [missionReview, setMissionReview] = useState<string>('')
@@ -240,4 +240,4 @@ const Missionform: React.FC<MissionFormProps> = ({ onMissionComplete }) => {
   )
 }
 
-export default Missionform
+export default MissionForm
