@@ -169,8 +169,10 @@ export const useJoinRandomRoom = create<joinRandomRoomState>()(
         try {
           const response = await joinRandomRoom(type)
 
-          const roomData = await getRoomData(response.id)
-          set({ joinconsultation: response, roomData })
+          // const roomData = await getRoomData(response.id)
+          set({ joinconsultation: response })
+          // set({ joinconsultation: response, roomData })
+          // return response
           return response
         } catch (error) {
           console.error('Failed to join room:', error)
