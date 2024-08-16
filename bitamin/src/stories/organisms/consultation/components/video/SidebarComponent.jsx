@@ -93,7 +93,7 @@ export default class SidebarComponent extends Component {
     return (
       <div className="flex h-full">
         {/* 참여자 리스트 영역 */}
-        <div className="w-2/5 p-4 border-r border-gray-200">
+        {/* <div className="w-2/5 p-4 border-r border-gray-200">
           <h2 className="text-lg font-bold mb-4">참여자 리스트</h2>
           <ul className="space-y-2">
             {this.props.participants.map((participant, index) => (
@@ -116,7 +116,7 @@ export default class SidebarComponent extends Component {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         {/* 채팅 영역 */}
         <div className="w-3/5 flex flex-col justify-between p-4">
