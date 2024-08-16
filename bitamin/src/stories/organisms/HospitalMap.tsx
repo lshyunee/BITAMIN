@@ -27,9 +27,6 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
   const mapRef = useRef<any>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const markerRefs = useRef<any[]>([]) // 마커 참조 저장
-  const [savedCenter] = useState({ lat, lng }) // 초기 중심
-  const [savedLevel] = useState<number>(5) // 초기 확대/축소 레벨
-
   const defaultLevel = 5
 
   const getLabelFromIndex = (index: number): string => {
@@ -40,8 +37,8 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
     if (!mapContainerRef.current) return
 
     const options = {
-      center: new window.kakao.maps.LatLng(savedCenter.lat, savedCenter.lng),
-      level: savedLevel,
+      center: new window.kakao.maps.LatLng(lat, lng), // props로 받은 lat, lng 사용
+      level: defaultLevel,
     }
 
     mapRef.current = new window.kakao.maps.Map(mapContainerRef.current, options)
@@ -61,7 +58,7 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
     const ps = new window.kakao.maps.services.Places()
 
     const searchOptions = {
-      location: new window.kakao.maps.LatLng(savedCenter.lat, savedCenter.lng),
+      location: new window.kakao.maps.LatLng(lat, lng), // props로 받은 lat, lng 사용
       radius: 10000,
     }
 
@@ -147,14 +144,14 @@ const MapBox: React.FC<MapBoxProps> = ({ lat, lng }) => {
     return () => {
       mapScript.removeEventListener('load', onLoadKakaoMap)
     }
-  }, [])
+  }, [lat, lng]) // lat과 lng 변경될 때마다 useEffect가 실행
 
   const handleCenter = () => {
     if (mapRef.current) {
       mapRef.current.setCenter(
-        new window.kakao.maps.LatLng(savedCenter.lat, savedCenter.lng)
+        new window.kakao.maps.LatLng(lat, lng) // props로 받은 lat, lng 사용
       )
-      mapRef.current.setLevel(savedLevel)
+      mapRef.current.setLevel(defaultLevel)
       initializeMap() // 초기화 시 마커와 검색 결과를 다시 로드
     }
   }
