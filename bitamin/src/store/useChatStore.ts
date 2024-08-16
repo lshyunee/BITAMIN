@@ -46,8 +46,8 @@ export const useChatStore = create<ChatState>()(
             content,
             category,
             consultationId,
-            userMessages,
-            count
+            count,
+            userMessages
           )
 
           const assistantMessage: Message = {

@@ -147,14 +147,15 @@ export default class SidebarComponent extends Component {
           </div>
           <div className="flex items-center mt-4">
             <input
-              className="flex-1 p-2 border border-gray-300 rounded-lg"
+              className="flex-1 p-4 border border-gray-300 rounded-lg"
               placeholder="메시지 입력..."
               value={this.state.message}
               onChange={this.handleChange}
               onKeyPress={this.handlePressKey}
+              style={{ height: '60px' }} // 입력창 높이를 늘림
             />
             <Tooltip title="메시지 전송">
-              <Fab size="small" className="ml-2" onClick={this.sendMessage}>
+              <Fab size="medium" className="ml-4" onClick={this.sendMessage}>
                 <Send />
               </Fab>
             </Tooltip>
