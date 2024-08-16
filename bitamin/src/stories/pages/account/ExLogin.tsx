@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react'
-import { getPhrases } from '@/api/phraseAPI'
 import styles from 'styles/account/ExLogin.module.css'
 import mainImg from 'assets/image/mainImg.png'
 import loginexGgul from 'assets/image/loginexGgul.png'
@@ -7,20 +5,6 @@ import mypageImg from 'assets/image/mypageImg.png'
 import healthPageImg from 'assets/image/health.png'
 
 const ExLogin: React.FC = () => {
-  const [phraseContent, setPhraseContent] = useState('') // phraseContent 상태 추가
-
-  useEffect(() => {
-    const fetchPhrase = async () => {
-      try {
-        const data = await getPhrases()
-        setPhraseContent(data.phraseContent)
-      } catch (error) {
-        console.error('Error fetching the phrase:', error)
-      }
-    }
-
-    fetchPhrase()
-  }, []) // 컴포넌트가 마운트될 때 한번만 호출
 
   return (
     <div>
@@ -28,7 +12,7 @@ const ExLogin: React.FC = () => {
         <img className={styles.mainImg} alt="Main Image" src={mainImg} />
         <div className={styles.inner}>
           <div className={styles.div3}>
-            <p className={styles.p}>{phraseContent}</p>
+            <p className={styles.p}>오늘 하루도 최선을 다한 당신, 멋져요!</p>
           </div>
         </div>
       </div>
