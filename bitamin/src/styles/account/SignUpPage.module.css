@@ -3,7 +3,7 @@
   height: 100vh;
   position: relative;
   background-color: #fffbfa;
-  overflow: hidden;
+  overflow: auto;
   text-align: center;
   font-size: 14px;
   color: #ff713c;
